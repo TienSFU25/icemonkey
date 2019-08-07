@@ -78,7 +78,7 @@ public:
     
     void readTheDatFile() {
         string line;
-        ifstream myfile ("/Users/user/Documents/361/opengl/hiopengl/hiopengl/icemonkey/movements.dat");
+        ifstream myfile ("/Users/user/Documents/361/opengl/hiopengl/hiopengl/scripts/movements.dat");
         vector<int> timeStepsToUpdate;
         vector<int> timeStepsToRemove;
         
