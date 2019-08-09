@@ -10,7 +10,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include <stdio.h>
 
 #include "common.hpp"
 #include "stb_image.h"

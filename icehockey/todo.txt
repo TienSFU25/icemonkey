@@ -1,0 +1,12 @@
+SHIT TO DO
+
+portant: how show text on circle?
+next destination display?
+
+-----> (need do first or really hard understand wtf going on)
+
+game time?
+wtf "trajectory"
+
+"interaction"
+some slider to set time? speed?

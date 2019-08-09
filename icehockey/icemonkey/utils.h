@@ -13,14 +13,23 @@
 #include <algorithm>
 #include <iterator>
 
+// X game seconds = 1 sim second
+const float Sim_Speed = 10.0;
+
 // rink sizing
-const float Rink_Width_Max = 100;
+const float Rink_Width_Max = 100;    
 const float Rink_Height_Max = 42.5;
 float rinkMaxDimension = fmax(Rink_Width_Max, Rink_Height_Max);
+
+//enum State {
+//    Move,
+//    Leave
+//};
 
 struct Pair {
     float X;
     float Y;
+    float T;
 };
 
 Pair normalize(Pair p) {
@@ -47,17 +56,6 @@ std::vector<std::string> split(const std::string& str, char delim = ' ')
     }
     
     container.push_back(str.substr(start, end - start));
-
-//    std::istringstream iss(str);
-//    std::copy(std::istream_iterator<std::string>(iss),
-//              std::istream_iterator<std::string>(),
-//              std::back_inserter(container));
-
-//    std::stringstream ss(str);
-//    std::string token;
-//    while (std::getline(ss, token, delim)) {
-//        container.push_back(token);
-//    }
 
     return container;
 }

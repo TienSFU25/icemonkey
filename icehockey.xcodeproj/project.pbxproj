@@ -7,13 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE2689D522FD31440020C532 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = CE2689D422FD31440020C532 /* glad.c */; };
+		CE2689D622FD33B10020C532 /* hockey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE2DAE0422F7D6A00037AA55 /* hockey.cpp */; };
+		CE2689D722FD350A0020C532 /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE2DADE522F7D1C60037AA55 /* common.cpp */; };
 		CE2DADD122F7CEAF0037AA55 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE2DADD022F7CEAF0037AA55 /* main.cpp */; };
-		CE2DADDB22F7D0E60037AA55 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2DADDA22F7D0E60037AA55 /* OpenGL.framework */; };
 		CE2DADDE22F7D1010037AA55 /* libglfw.3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2DADDC22F7D1010037AA55 /* libglfw.3.3.dylib */; };
-		CE2DADDF22F7D1010037AA55 /* libGLEW.2.1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2DADDD22F7D1010037AA55 /* libGLEW.2.1.0.dylib */; };
-		CE2DADE722F7D1C60037AA55 /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE2DADE522F7D1C60037AA55 /* common.cpp */; };
-		CE2DAE0C22F7D6A00037AA55 /* hockey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE2DAE0422F7D6A00037AA55 /* hockey.cpp */; };
-		CE2DAE0E22F7D7450037AA55 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = CE2DAE0D22F7D7450037AA55 /* glad.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,6 +31,14 @@
 		CE26899622FA63BB0020C532 /* reader.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = reader.js; path = icehockey/scripts/reader.js; sourceTree = SOURCE_ROOT; };
 		CE26899722FA63BB0020C532 /* smaller.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = smaller.js; path = icehockey/scripts/smaller.js; sourceTree = SOURCE_ROOT; };
 		CE26899822FA63BB0020C532 /* movements.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = movements.dat; path = icehockey/scripts/movements.dat; sourceTree = SOURCE_ROOT; };
+		CE26899922FB734F0020C532 /* timeline.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = timeline.json; path = icehockey/scripts/timeline.json; sourceTree = SOURCE_ROOT; };
+		CE2689CE22FD2C7F0020C532 /* arial.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = arial.ttf; sourceTree = "<group>"; };
+		CE2689CF22FD2EAA0020C532 /* rink.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = rink.vs; path = icehockey/shaders/rink.vs; sourceTree = SOURCE_ROOT; };
+		CE2689D022FD2EAA0020C532 /* text.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = text.vs; path = icehockey/shaders/text.vs; sourceTree = SOURCE_ROOT; };
+		CE2689D122FD2EAA0020C532 /* circle.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = circle.fs; path = icehockey/shaders/circle.fs; sourceTree = SOURCE_ROOT; };
+		CE2689D222FD2EAA0020C532 /* rink.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = rink.fs; path = icehockey/shaders/rink.fs; sourceTree = SOURCE_ROOT; };
+		CE2689D322FD2EAA0020C532 /* text.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = text.fs; path = icehockey/shaders/text.fs; sourceTree = SOURCE_ROOT; };
+		CE2689D422FD31440020C532 /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glad.c; sourceTree = "<group>"; };
 		CE2DADCD22F7CEAF0037AA55 /* icehockey */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = icehockey; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE2DADD022F7CEAF0037AA55 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		CE2DADDA22F7D0E60037AA55 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -44,7 +50,6 @@
 		CE2DADE522F7D1C60037AA55 /* common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = common.cpp; path = icehockey/shared/common.cpp; sourceTree = SOURCE_ROOT; };
 		CE2DADE622F7D1C60037AA55 /* stb_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stb_image.h; path = icehockey/shared/stb_image.h; sourceTree = SOURCE_ROOT; };
 		CE2DADFD22F7D69F0037AA55 /* plain-wallpaper.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "plain-wallpaper.jpg"; path = "icehockey/icemonkey/plain-wallpaper.jpg"; sourceTree = SOURCE_ROOT; };
-		CE2DADFE22F7D69F0037AA55 /* rink.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = rink.vs; path = icehockey/icemonkey/rink.vs; sourceTree = SOURCE_ROOT; };
 		CE2DADFF22F7D69F0037AA55 /* home.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = home.jpg; path = icehockey/icemonkey/home.jpg; sourceTree = SOURCE_ROOT; };
 		CE2DAE0022F7D69F0037AA55 /* linha.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = linha.jpg; path = icehockey/icemonkey/linha.jpg; sourceTree = SOURCE_ROOT; };
 		CE2DAE0122F7D69F0037AA55 /* away.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = away.jpg; path = icehockey/icemonkey/away.jpg; sourceTree = SOURCE_ROOT; };
@@ -52,12 +57,9 @@
 		CE2DAE0322F7D6A00037AA55 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utils.h; path = icehockey/icemonkey/utils.h; sourceTree = SOURCE_ROOT; };
 		CE2DAE0422F7D6A00037AA55 /* hockey.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = hockey.cpp; path = icehockey/icemonkey/hockey.cpp; sourceTree = SOURCE_ROOT; };
 		CE2DAE0522F7D6A00037AA55 /* Reada.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reada.h; path = icehockey/icemonkey/Reada.h; sourceTree = SOURCE_ROOT; };
-		CE2DAE0622F7D6A00037AA55 /* circle.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = circle.fs; path = icehockey/icemonkey/circle.fs; sourceTree = SOURCE_ROOT; };
 		CE2DAE0722F7D6A00037AA55 /* tiena.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = tiena.jpg; path = icehockey/icemonkey/tiena.jpg; sourceTree = SOURCE_ROOT; };
 		CE2DAE0822F7D6A00037AA55 /* Playa.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Playa.hpp; path = icehockey/icemonkey/Playa.hpp; sourceTree = SOURCE_ROOT; };
-		CE2DAE0A22F7D6A00037AA55 /* rink.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = rink.fs; path = icehockey/icemonkey/rink.fs; sourceTree = SOURCE_ROOT; };
 		CE2DAE0B22F7D6A00037AA55 /* rink.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = rink.png; path = icehockey/icemonkey/rink.png; sourceTree = SOURCE_ROOT; };
-		CE2DAE0D22F7D7450037AA55 /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = glad.c; path = icehockey/shared/glad.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,8 +68,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE2DADDE22F7D1010037AA55 /* libglfw.3.3.dylib in Frameworks */,
-				CE2DADDF22F7D1010037AA55 /* libGLEW.2.1.0.dylib in Frameworks */,
-				CE2DADDB22F7D0E60037AA55 /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,6 +77,7 @@
 		CE26899422FA637D0020C532 /* scripts */ = {
 			isa = PBXGroup;
 			children = (
+				CE26899922FB734F0020C532 /* timeline.json */,
 				CE26899522FA63BB0020C532 /* giantFile.js */,
 				CE26899822FA63BB0020C532 /* movements.dat */,
 				CE26899622FA63BB0020C532 /* reader.js */,
@@ -85,9 +86,22 @@
 			path = scripts;
 			sourceTree = "<group>";
 		};
+		CE2689CA22FD2BDE0020C532 /* shaders */ = {
+			isa = PBXGroup;
+			children = (
+				CE2689D122FD2EAA0020C532 /* circle.fs */,
+				CE2689D222FD2EAA0020C532 /* rink.fs */,
+				CE2689CF22FD2EAA0020C532 /* rink.vs */,
+				CE2689D322FD2EAA0020C532 /* text.fs */,
+				CE2689D022FD2EAA0020C532 /* text.vs */,
+			);
+			path = shaders;
+			sourceTree = "<group>";
+		};
 		CE2DADC422F7CEAF0037AA55 = {
 			isa = PBXGroup;
 			children = (
+				CE2689CA22FD2BDE0020C532 /* shaders */,
 				CE26899422FA637D0020C532 /* scripts */,
 				CE2DADFC22F7D6830037AA55 /* icemonkey */,
 				CE2DADE122F7D1B40037AA55 /* shared */,
@@ -108,6 +122,8 @@
 		CE2DADCF22F7CEAF0037AA55 /* icehockey */ = {
 			isa = PBXGroup;
 			children = (
+				CE2689D422FD31440020C532 /* glad.c */,
+				CE2689CE22FD2C7F0020C532 /* arial.ttf */,
 				CE2DADD022F7CEAF0037AA55 /* main.cpp */,
 			);
 			path = icehockey;
@@ -126,7 +142,6 @@
 		CE2DADE122F7D1B40037AA55 /* shared */ = {
 			isa = PBXGroup;
 			children = (
-				CE2DAE0D22F7D7450037AA55 /* glad.c */,
 				CE2DADE422F7D1C60037AA55 /* Camera.h */,
 				CE2DADE522F7D1C60037AA55 /* common.cpp */,
 				CE2DADE322F7D1C60037AA55 /* common.hpp */,
@@ -140,7 +155,6 @@
 			isa = PBXGroup;
 			children = (
 				CE2DAE0122F7D69F0037AA55 /* away.jpg */,
-				CE2DAE0622F7D6A00037AA55 /* circle.fs */,
 				CE2DAE0422F7D6A00037AA55 /* hockey.cpp */,
 				CE2DAE0222F7D69F0037AA55 /* hockey.hpp */,
 				CE2DADFF22F7D69F0037AA55 /* home.jpg */,
@@ -148,9 +162,7 @@
 				CE2DADFD22F7D69F0037AA55 /* plain-wallpaper.jpg */,
 				CE2DAE0822F7D6A00037AA55 /* Playa.hpp */,
 				CE2DAE0522F7D6A00037AA55 /* Reada.h */,
-				CE2DAE0A22F7D6A00037AA55 /* rink.fs */,
 				CE2DAE0B22F7D6A00037AA55 /* rink.png */,
-				CE2DADFE22F7D69F0037AA55 /* rink.vs */,
 				CE2DAE0722F7D6A00037AA55 /* tiena.jpg */,
 				CE2DAE0322F7D6A00037AA55 /* utils.h */,
 			);
@@ -214,10 +226,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE2DADE722F7D1C60037AA55 /* common.cpp in Sources */,
+				CE2689D722FD350A0020C532 /* common.cpp in Sources */,
+				CE2689D622FD33B10020C532 /* hockey.cpp in Sources */,
 				CE2DADD122F7CEAF0037AA55 /* main.cpp in Sources */,
-				CE2DAE0C22F7D6A00037AA55 /* hockey.cpp in Sources */,
-				CE2DAE0E22F7D7450037AA55 /* glad.c in Sources */,
+				CE2689D522FD31440020C532 /* glad.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,6 +353,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_LDFLAGS = (
+					"-lfreetyped",
+					"-lbz2",
+					"-lz",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -351,6 +368,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_LDFLAGS = (
+					"-lfreetyped",
+					"-lbz2",
+					"-lz",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

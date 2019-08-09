@@ -1,13 +1,8 @@
 #ifndef PLAYA_H
 #define PLAYA_H
 
-#include <glad/glad.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/string_cast.hpp>
-
 #include <vector>
-#include <iostream>
 #include "utils.h"
 
 const Pair defaultInitialPosition = {.X = -2.0f, .Y = 2.0f};
@@ -16,27 +11,67 @@ class Playa
 {
 public:
     bool isHomeTeam;
+    std::vector<Pair> destinations;
     
-    Playa(Pair initialPosition = defaultInitialPosition, bool _isHomeTeam = false)
+    Playa(std::vector<Pair> d, int pid = -1, bool _isHomeTeam = false)
     {
-        xPos = initialPosition.X;
-        yPos = initialPosition.Y;
+        destinations = d;
+        id = pid;
         isHomeTeam = _isHomeTeam;
-    }
-    
-    void setMoveTo(Pair _destination, float overTime) {
-        destination = _destination;
+
+        counter = 1;
+        nextDestination = destinations[counter];
         
-        timeRemain = overTime;
+        xPos = 0 + destinations[0].X;
+        yPos = 0 + destinations[0].Y;
+        timeRemain = (nextDestination.T - destinations[0].T) / Sim_Speed;
     }
     
-    void setMoveOffscreen(float overTime) {
-        setMoveTo(defaultInitialPosition, overTime);
-    }
+//    void setMoveTo(Pair _destination, float overTime) {
+//        destination = _destination;
+//
+//        timeRemain = overTime;
+//    }
+//
+//    void setMoveOffscreen(float overTime) {
+//        setMoveTo(defaultInitialPosition, overTime);
+//    }
     
-    bool move(float deltaTime) {
-        float xRemain = destination.X - xPos;
-        float yRemain = destination.Y - yPos;
+//    void leave(float deltaTime, float overTime) {
+//        if (state == Leaving) {
+//            timeRemain = overTime;
+//            state = Moving;
+//            nextDestination = defaultInitialPosition;
+//            counter += 1;
+//            move(deltaTime);
+//        }
+//    }
+//
+//    void enter(float deltaTime, float globalTime) {
+//        if (state == Entering) {
+////            if (counter == 0) {
+//            nextDestination = destinations[counter];
+//            timeRemain = nextDestination.T - globalTime;
+//            state = Moving;
+//            move(deltaTime);
+//
+//            counter += 1;
+////            } else {
+////                counter += 1;
+////
+////                if (counter < destinations.size()) {
+////                    nextDestination = destinations[counter];
+////                    timeRemain = nextDestination.T - globalTime;
+////                    state = Moving;
+////                    move(deltaTime);
+////                }
+////            }
+//        }
+//    }
+    
+    void move(float deltaTime) {
+        float xRemain = nextDestination.X - xPos;
+        float yRemain = nextDestination.Y - yPos;
         
         // move X, Y
         if (timeRemain > 0.01f && (abs(xRemain) > 0.01f || abs(yRemain) > 0.01f)) {
@@ -46,11 +81,14 @@ public:
             xPos += stepX;
             yPos += stepY;
             timeRemain -= deltaTime;
-            
-            return true;
+        } else {
+            if (counter < destinations.size()) {
+                nextDestination = destinations[counter];
+//                std::cout << "moving " << id << " to (" << nextDestination.X << ", " << nextDestination.Y << ")" << std::endl;
+                timeRemain = (nextDestination.T - destinations[counter - 1].T) / Sim_Speed;
+                counter += 1;
+            }
         }
-        
-        return false;
     }
     
     glm::vec3 getTranslationMatrix() {
@@ -59,9 +97,15 @@ public:
 
     
 private:
+    int id;
     float xPos = 0.0f;
     float yPos = 0.0f;
-    float timeRemain = 10.0f;
-    Pair destination;
+
+    // in seconds
+    float timeRemain = 1.0f;
+    
+    // next dest to visit
+    unsigned int counter = 0;
+    Pair nextDestination;
 };
 #endif
