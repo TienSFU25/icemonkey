@@ -35,6 +35,8 @@ namespace IceHockey {
     float lastY = SCR_HEIGHT / 2.0f;
     bool firstMouse = true;
     bool loop = false;
+    static const int numVComponents = 2;
+    static const int numTComponents = 2;
     
     // timing
     float deltaTime = 0.0f;
@@ -178,9 +180,9 @@ namespace IceHockey {
         Shader circleShader(F1, F3);
         Shader textShader(F4, F5);
 
-        glm::mat4 textProjection = glm::ortho(0.0f, static_cast<GLfloat>(SCR_WIDTH), 0.0f, static_cast<GLfloat>(SCR_HEIGHT));
-        textShader.use();
-        glUniformMatrix4fv(glGetUniformLocation(textShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(textProjection));
+//        glm::mat4 textProjection = glm::ortho(0.0f, static_cast<GLfloat>(SCR_WIDTH), 0.0f, static_cast<GLfloat>(SCR_HEIGHT));
+//        textShader.use();
+//        glUniformMatrix4fv(glGetUniformLocation(textShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(textProjection));
 
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
@@ -317,14 +319,20 @@ namespace IceHockey {
         FT_Done_Face(face);
         FT_Done_FreeType(ft);
         
+        
         // Configure VAO/VBO for texture quads
         glGenVertexArrays(1, &TextVAO);
         glGenBuffers(1, &TextVBO);
         glBindVertexArray(TextVAO);
         glBindBuffer(GL_ARRAY_BUFFER, TextVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * (numVComponents + numTComponents), NULL, GL_DYNAMIC_DRAW);
+        
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+        glVertexAttribPointer(0, numVComponents, GL_FLOAT, GL_FALSE, (numVComponents + numTComponents) * sizeof(GLfloat), 0);
+
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, numTComponents, GL_FLOAT, GL_FALSE, (numVComponents + numTComponents) * sizeof(GLfloat), (void*)(numVComponents * sizeof(float)));
+        
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
 
@@ -366,6 +374,17 @@ namespace IceHockey {
                 
                 glBindVertexArray(planeVAO);
                 glDrawArrays(GL_TRIANGLES, 0, numPlaneVertices);
+
+                // set the text projection
+                glm::mat4 textProjection = glm::ortho(0.0f, static_cast<GLfloat>(SCR_WIDTH), 0.0f, static_cast<GLfloat>(SCR_HEIGHT));
+                textShader.use();
+                
+//                glm::mat4 iden;
+//                glm::mat4 trans = glm::translate(iden, glm::vec3(0.0, 0.6f, 0.0f));
+                
+                // trans * proj = project then translate
+                // proj * trans = translate then project
+                glUniformMatrix4fv(glGetUniformLocation(textShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(textProjection));
                 
                 // draw the circles
                 circleShader.use();
@@ -446,7 +465,7 @@ namespace IceHockey {
             GLfloat w = ch.Size.x * scale;
             GLfloat h = ch.Size.y * scale;
             // Update VBO for each character
-            GLfloat vertices[6][4] = {
+            GLfloat vertices[6][numVComponents + numTComponents] = {
                 { xpos,     ypos + h,   0.0, 0.0 },
                 { xpos,     ypos,       0.0, 1.0 },
                 { xpos + w, ypos,       1.0, 1.0 },
