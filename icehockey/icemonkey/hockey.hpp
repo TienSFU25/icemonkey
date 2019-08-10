@@ -12,6 +12,7 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include "common.hpp"
+#include "shader_s.h"
 
 #endif /* hockey_hpp */
 
@@ -22,4 +23,5 @@ namespace IceHockey {
     void processInput(GLFWwindow *window);
     void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     int main();
+    void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
 }

@@ -11,6 +11,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <boost/format.hpp>
 #include <nlohmann/json.hpp>
 
 #include "hockey.hpp"
@@ -23,8 +24,6 @@
 // FreeType
 #include <ft2build.h>
 #include FT_FREETYPE_H
-
-#include "shader_s.h"
 
 // for convenience
 using json = nlohmann::json;
@@ -89,7 +88,6 @@ namespace IceHockey {
         
         return circleVertices;
     }
-    void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
     
     int main()
     {
@@ -179,7 +177,11 @@ namespace IceHockey {
         Shader lightingShader(F1, F2);
         Shader circleShader(F1, F3);
         Shader textShader(F4, F5);
-        
+
+        glm::mat4 textProjection = glm::ortho(0.0f, static_cast<GLfloat>(SCR_WIDTH), 0.0f, static_cast<GLfloat>(SCR_HEIGHT));
+        textShader.use();
+        glUniformMatrix4fv(glGetUniformLocation(textShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(textProjection));
+
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
         float normalizedRinkWidth = normalize(Rink_Width_Max);
@@ -400,11 +402,9 @@ namespace IceHockey {
                     glDrawArrays(GL_TRIANGLE_FAN, 0, numCircleVertices);
                     it++;
                 }
-                
-                // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-                // -------------------------------------------------------------------------------
-//                glfwSwapBuffers(window);
-//                glfwPollEvents();
+
+                std::string s = (boost::format("time: %4.5f ms") % currentFrame).str();
+                IceHockey::RenderText(textShader, s, 25.0f, 200.0f, 0.5f, glm::vec3(0.3, 0.7f, 0.9f));
             }
             
             // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -426,6 +426,51 @@ namespace IceHockey {
         return 0;
     }
     
+    void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
+    {
+        // Activate corresponding render state
+        shader.use();
+        glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
+        glActiveTexture(GL_TEXTURE0);
+        glBindVertexArray(TextVAO);
+        
+        // Iterate through all characters
+        std::string::const_iterator c;
+        for (c = text.begin(); c != text.end(); c++)
+        {
+            Character ch = Characters[*c];
+            
+            GLfloat xpos = x + ch.Bearing.x * scale;
+            GLfloat ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+            
+            GLfloat w = ch.Size.x * scale;
+            GLfloat h = ch.Size.y * scale;
+            // Update VBO for each character
+            GLfloat vertices[6][4] = {
+                { xpos,     ypos + h,   0.0, 0.0 },
+                { xpos,     ypos,       0.0, 1.0 },
+                { xpos + w, ypos,       1.0, 1.0 },
+                
+                { xpos,     ypos + h,   0.0, 0.0 },
+                { xpos + w, ypos,       1.0, 1.0 },
+                { xpos + w, ypos + h,   1.0, 0.0 }
+            };
+            // Render glyph texture over quad
+            glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+            // Update content of VBO memory
+            glBindBuffer(GL_ARRAY_BUFFER, TextVBO);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // Be sure to use glBufferSubData and not glBufferData
+            
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            // Render quad
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+            x += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+        }
+        glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
     void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
         if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
             loop = !loop;
@@ -484,50 +529,4 @@ namespace IceHockey {
     {
         camera.ProcessMouseScroll(yoffset);
     }
-    
-    void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
-    {
-        // Activate corresponding render state
-        shader.use();
-        glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
-        glActiveTexture(GL_TEXTURE0);
-        glBindVertexArray(TextVAO);
-        
-        // Iterate through all characters
-        std::string::const_iterator c;
-        for (c = text.begin(); c != text.end(); c++)
-        {
-            Character ch = Characters[*c];
-            
-            GLfloat xpos = x + ch.Bearing.x * scale;
-            GLfloat ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
-            
-            GLfloat w = ch.Size.x * scale;
-            GLfloat h = ch.Size.y * scale;
-            // Update VBO for each character
-            GLfloat vertices[6][4] = {
-                { xpos,     ypos + h,   0.0, 0.0 },
-                { xpos,     ypos,       0.0, 1.0 },
-                { xpos + w, ypos,       1.0, 1.0 },
-                
-                { xpos,     ypos + h,   0.0, 0.0 },
-                { xpos + w, ypos,       1.0, 1.0 },
-                { xpos + w, ypos + h,   1.0, 0.0 }
-            };
-            // Render glyph texture over quad
-            glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-            // Update content of VBO memory
-            glBindBuffer(GL_ARRAY_BUFFER, TextVBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // Be sure to use glBufferSubData and not glBufferData
-            
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            // Render quad
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-            // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-            x += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
-        }
-        glBindVertexArray(0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
 }
