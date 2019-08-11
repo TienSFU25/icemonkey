@@ -128,12 +128,10 @@ namespace IceHockey {
         std::string F3 = loc + "circle.fs";
         std::string F4 = loc + "text.vs";
         std::string F5 = loc + "text.fs";
-        std::string F6 = loc + "text2.vs";
         
         Shader lightingShader(F1, F2);
         Shader circleShader(F1, F3);
         Shader textShader(F4, F5);
-        Shader anotherTextShader(F6, F5);
 
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
@@ -265,6 +263,9 @@ namespace IceHockey {
                 glm::mat4 textProjection = glm::ortho(-W / 2, W / 2, -H / 2, H / 2);
                 
                 textShader.use();
+                glm::mat4 identity;
+                textShader.setMat4("model", identity);
+                textShader.setMat4("view", identity);
                 textShader.setMat4("projection", textProjection);
 
                 std::string s = (boost::format("time: %4.5f ms") % currentFrame).str();
@@ -308,16 +309,16 @@ namespace IceHockey {
                     circleShader.setMat4("model", circleModel);
                     glDrawArrays(GL_TRIANGLE_FAN, 0, numCircleVertices);
                     
-                    anotherTextShader.use();
+                    textShader.use();
                     glm::mat4 textModel;
                     glm::vec3 translateText = glm::vec3(-CIRCLE_RADIUS / 2, -CIRCLE_RADIUS / 3, 0);
                     textModel = glm::translate(circleModel, translateText);
                     
-                    anotherTextShader.setMat4("model", textModel);
-                    anotherTextShader.setMat4("view", view);
-                    anotherTextShader.setMat4("projection", projection);
+                    textShader.setMat4("model", textModel);
+                    textShader.setMat4("view", view);
+                    textShader.setMat4("projection", projection);
 
-                    IceHockey::RenderText(anotherTextShader, std::to_string(playerId), 0.0, 0.0, 0.75, glm::vec3(0.0, 0.0, 0.0));
+                    IceHockey::RenderText(textShader, std::to_string(playerId), 0.0, 0.0, 0.75, glm::vec3(0.0, 0.0, 0.0));
                     it++;
                 }
             }

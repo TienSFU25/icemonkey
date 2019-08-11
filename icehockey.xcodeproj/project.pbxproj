@@ -39,7 +39,6 @@
 		CE2689D222FD2EAA0020C532 /* rink.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = rink.fs; path = icehockey/shaders/rink.fs; sourceTree = SOURCE_ROOT; };
 		CE2689D322FD2EAA0020C532 /* text.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = text.fs; path = icehockey/shaders/text.fs; sourceTree = SOURCE_ROOT; };
 		CE2689D422FD31440020C532 /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glad.c; sourceTree = "<group>"; };
-		CE2689D922FFC7020020C532 /* text2.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = text2.vs; path = icehockey/shaders/text2.vs; sourceTree = SOURCE_ROOT; };
 		CE2DADCD22F7CEAF0037AA55 /* icehockey */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = icehockey; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE2DADD022F7CEAF0037AA55 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		CE2DADDA22F7D0E60037AA55 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -90,7 +89,6 @@
 		CE2689CA22FD2BDE0020C532 /* shaders */ = {
 			isa = PBXGroup;
 			children = (
-				CE2689D922FFC7020020C532 /* text2.vs */,
 				CE2689D122FD2EAA0020C532 /* circle.fs */,
 				CE2689D222FD2EAA0020C532 /* rink.fs */,
 				CE2689CF22FD2EAA0020C532 /* rink.vs */,
