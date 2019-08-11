@@ -84,6 +84,12 @@ public:
         } else {
             if (counter < destinations.size()) {
                 nextDestination = destinations[counter];
+                
+                // "teleport" and just stand there
+                if (nextDestination.isEnter) {
+                    xPos = nextDestination.X;
+                    yPos = nextDestination.Y;
+                }
 //                std::cout << "moving " << id << " to (" << nextDestination.X << ", " << nextDestination.Y << ")" << std::endl;
                 timeRemain = (nextDestination.T - destinations[counter - 1].T) / Sim_Speed;
                 counter += 1;

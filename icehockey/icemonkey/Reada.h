@@ -82,9 +82,9 @@ public:
             int pid = it -> first;
             Playa& player = it -> second;
 
-            if (pid == 302) {
+//            if (pid == 302) {
                 player.move(deltaTime);
-            }
+//            }
         }
     }
     
@@ -117,24 +117,26 @@ public:
                 wholeThing += line;
             }
             
-            map<string, vector<map<string, float>>> parsed = json::parse(wholeThing);;
-            for (map<string, vector<map<string, float>>>::iterator it=parsed.begin(); it!=parsed.end(); ++it) {
+            map<string, vector<map<string, string>>> parsed = json::parse(wholeThing);;
+            for (map<string, vector<map<string, string>>>::iterator it=parsed.begin(); it!=parsed.end(); ++it) {
                 string playerId = it -> first;
                 vector<Pair> destinations;
                 
-                vector<map<string, float>> playerTimeline = it -> second;
+                vector<map<string, string>> playerTimeline = it -> second;
                 
-                for (map<string, float>& position: playerTimeline) {
-                    Pair p = {.X = position["X"], .Y = position["Y"], .T = position["T"]};
+                for (map<string, string>& position: playerTimeline) {
+                    Pair p = {.X = stringToFloat(position["X"]),
+                              .Y = stringToFloat(position["Y"]),
+                              .T = stringToFloat(position["T"]),
+                              .isEnter = position["S"] == "E"
+                    };
                     destinations.push_back(p);
                 }
                 
                 Playa newPlayer(destinations, stringToInt(playerId), false);
                 players.insert(pair<int, Playa>(stringToInt(playerId), newPlayer));
             }
-            
-            int aaaa = 10;
-            
+                        
             myfile.close();
         }
         

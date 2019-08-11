@@ -34,6 +34,7 @@ struct Pair {
     float X;
     float Y;
     float T;
+    bool isEnter;
 };
 
 Pair normalize(Pair p) {

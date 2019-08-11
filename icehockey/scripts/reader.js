@@ -166,7 +166,11 @@ for (let i = 0; i < pids.length; i++) {
             }
         }
 
-        thingThatHappened.S = undefined;
+        thingThatHappened.X += '';
+        thingThatHappened.Y += '';
+        thingThatHappened.T += '';
+
+        // thingThatHappened.S = undefined;
     };
 };
 
