@@ -11,10 +11,23 @@
 
 #endif /* common_hpp */
 
-// settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <map>
+
+// FreeType
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
+/// Holds all state information relevant to a character as loaded using FreeType
+struct Character {
+    GLuint TextureID;   // ID handle of the glyph texture
+    glm::ivec2 Size;    // Size of glyph
+    glm::ivec2 Bearing;  // Offset from baseline to left/top of glyph
+    FT_Pos Advance;    // Horizontal offset to advance to next glyph
+};
 
 namespace Utils {
     unsigned int loadTexture(const char* path);
+    std::map<GLchar, Character> loadFonts();
 }

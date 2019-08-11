@@ -23,5 +23,6 @@ namespace IceHockey {
     void processInput(GLFWwindow *window);
     void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     int main();
+    void RenderStaticText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
     void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
 }

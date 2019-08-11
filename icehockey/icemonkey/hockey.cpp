@@ -6,11 +6,7 @@
 //  Copyright © 2019 tienv. All rights reserved.
 //
 
-//#include <GLFW/glfw3.h>
-
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <boost/format.hpp>
 #include <nlohmann/json.hpp>
 
@@ -20,10 +16,6 @@
 #include "Reada.h"
 
 #include <iostream>
-
-// FreeType
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 // for convenience
 using json = nlohmann::json;
@@ -35,27 +27,19 @@ namespace IceHockey {
     float lastY = SCR_HEIGHT / 2.0f;
     bool firstMouse = true;
     bool loop = false;
-    static const int numVComponents = 2;
+    static const int numVComponents = 3;
     static const int numTComponents = 2;
-    
+    float CIRCLE_RADIUS = 0.1f;
+
     // timing
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
     
     GLuint TextVBO, TextVAO;
     
-    /// Holds all state information relevant to a character as loaded using FreeType
-    struct Character {
-        GLuint TextureID;   // ID handle of the glyph texture
-        glm::ivec2 Size;    // Size of glyph
-        glm::ivec2 Bearing;  // Offset from baseline to left/top of glyph
-        FT_Pos Advance;    // Horizontal offset to advance to next glyph
-    };
-    
     std::map<GLchar, Character> Characters;
     
     std::vector<float> initCircleVertices() {
-        float CIRCLE_RADIUS = 0.1f;
         int circle_points = 50;
         double dtheta = 2*  3.1416f/circle_points ;
         double theta = 0.0;
@@ -95,37 +79,6 @@ namespace IceHockey {
     {
         Reada r;
         r.readTheDatFile();
-        
-        // or even nicer with a raw string literal
-        auto j2 = R"(
-        {
-            "happy": true,
-            "pi": 3.141,
-            "list": [{"a": 1}]
-        }
-        )"_json;
-
-        json j1 = {
-            {"pi", 3.141},
-            {"happy", true},
-            {"name", "Niels"},
-            {"nothing", nullptr},
-            {"answer", {
-                {"everything", 42}
-            }},
-            {"object", {
-                {"currency", "USD"},
-                {"value", 42.99}
-            }}
-        };
-        
-        j1["name"] = "banana";
-        std::string A = j1["name"];
-        std::vector<std::map<std::string, int>> B = j2["list"];
-        
-        for (auto& element : j1) {
-            std::cout << element << '\n';
-        }
         
         // glfw: initialize and configure
         // ------------------------------
@@ -175,14 +128,12 @@ namespace IceHockey {
         std::string F3 = loc + "circle.fs";
         std::string F4 = loc + "text.vs";
         std::string F5 = loc + "text.fs";
+        std::string F6 = loc + "text2.vs";
         
         Shader lightingShader(F1, F2);
         Shader circleShader(F1, F3);
         Shader textShader(F4, F5);
-
-//        glm::mat4 textProjection = glm::ortho(0.0f, static_cast<GLfloat>(SCR_WIDTH), 0.0f, static_cast<GLfloat>(SCR_HEIGHT));
-//        textShader.use();
-//        glUniformMatrix4fv(glGetUniformLocation(textShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(textProjection));
+        Shader anotherTextShader(F6, F5);
 
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
@@ -250,77 +201,11 @@ namespace IceHockey {
         unsigned int awayTexture = Utils::loadTexture("/Users/user/Documents/361/opengl/icehockey/icehockey/icemonkey/tiena.jpg");
         
         glfwSetKeyCallback(window, IceHockey::key_callback);
+        
+        // font shit
+        Characters = Utils::loadFonts();
 
-        // FreeType
-        FT_Library ft;
-        // All functions return a value different than 0 whenever an error occurred
-        if (FT_Init_FreeType(&ft))
-            std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-        
-        // Load font as face
-        FT_Face face;
-        std::string fontLoc = "/Users/user/Documents/361/opengl/icehockey/icehockey/arial.ttf";
-        
-        if (FT_New_Face(ft, fontLoc.c_str(), 0, &face))
-            std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
-        
-        // Set size to load glyphs as
-        FT_Set_Pixel_Sizes(face, 0, 48);
-        
-        // Set OpenGL options
-        glEnable(GL_CULL_FACE);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
-        // Disable byte-alignment restriction
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        
-        // Load first 128 characters of ASCII set
-        for (GLubyte c = 0; c < 128; c++)
-        {
-            // Load character glyph
-            if (FT_Load_Char(face, c, FT_LOAD_RENDER))
-            {
-                std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-                continue;
-            }
-            // Generate texture
-            GLuint texture;
-            glGenTextures(1, &texture);
-            glBindTexture(GL_TEXTURE_2D, texture);
-            glTexImage2D(
-                         GL_TEXTURE_2D,
-                         0,
-                         GL_RED,
-                         face->glyph->bitmap.width,
-                         face->glyph->bitmap.rows,
-                         0,
-                         GL_RED,
-                         GL_UNSIGNED_BYTE,
-                         face->glyph->bitmap.buffer
-                         );
-            // Set texture options
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            // Now store character for later use
-            Character character = {
-                texture,
-                glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                face->glyph->advance.x
-            };
-            Characters.insert(std::pair<GLchar, Character>(c, character));
-        }
-        glBindTexture(GL_TEXTURE_2D, 0);
-
-        // Destroy FreeType once we're finished
-        FT_Done_Face(face);
-        FT_Done_FreeType(ft);
-        
-        
-        // Configure VAO/VBO for texture quads
+        // setup the text quads
         glGenVertexArrays(1, &TextVAO);
         glGenBuffers(1, &TextVBO);
         glBindVertexArray(TextVAO);
@@ -335,7 +220,6 @@ namespace IceHockey {
         
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
-
         
         // render loop
         // -----------
@@ -367,7 +251,7 @@ namespace IceHockey {
                 // mvp
                 glm::mat4 model = glm::mat4(1.0f);
                 lightingShader.setMat4("model", model);
-                glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+                glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
                 glm::mat4 view = camera.GetViewMatrix();
                 lightingShader.setMat4("projection", projection);
                 lightingShader.setMat4("view", view);
@@ -376,28 +260,33 @@ namespace IceHockey {
                 glDrawArrays(GL_TRIANGLES, 0, numPlaneVertices);
 
                 // set the text projection
-                glm::mat4 textProjection = glm::ortho(0.0f, static_cast<GLfloat>(SCR_WIDTH), 0.0f, static_cast<GLfloat>(SCR_HEIGHT));
+                GLfloat W = static_cast<GLfloat>(SCR_WIDTH);
+                GLfloat H = static_cast<GLfloat>(SCR_HEIGHT);
+                glm::mat4 textProjection = glm::ortho(-W / 2, W / 2, -H / 2, H / 2);
+                
                 textShader.use();
-                
-//                glm::mat4 iden;
-//                glm::mat4 trans = glm::translate(iden, glm::vec3(0.0, 0.6f, 0.0f));
-                
-                // trans * proj = project then translate
-                // proj * trans = translate then project
-                glUniformMatrix4fv(glGetUniformLocation(textShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(textProjection));
-                
+                textShader.setMat4("projection", textProjection);
+
+                std::string s = (boost::format("time: %4.5f ms") % currentFrame).str();
+                IceHockey::RenderStaticText(textShader, s, -W / 2 + 50, -H / 2 + 50, 0.5, glm::vec3(0.3, 0.7f, 0.9f));
+
+                std::map<int, Playa>::iterator it = r.players.begin();
+
                 // draw the circles
                 circleShader.use();
                 circleShader.setMat4("projection", projection);
                 circleShader.setMat4("view", view);
-                
-                std::map<int, Playa>::iterator it = r.players.begin();
-                
+
                 while(it != r.players.end()) {
+                    circleShader.use();
+                    glBindVertexArray(circleVAO);
+
+                    int playerId = it -> first;
                     Playa playa = it -> second;
                     
                     glm::mat4 circleModel = glm::mat4(1.0f);
-                    circleModel = glm::translate(circleModel, playa.getTranslationMatrix());
+                    glm::vec3 trans = playa.getTranslationMatrix();
+                    circleModel = glm::translate(circleModel, trans);
                     
                     if (playa.isHomeTeam) {
                         glActiveTexture(GL_TEXTURE0);
@@ -417,13 +306,20 @@ namespace IceHockey {
                     }
                     
                     circleShader.setMat4("model", circleModel);
-                    glBindVertexArray(circleVAO);
                     glDrawArrays(GL_TRIANGLE_FAN, 0, numCircleVertices);
+                    
+                    anotherTextShader.use();
+                    glm::mat4 textModel;
+                    glm::vec3 translateText = glm::vec3(-CIRCLE_RADIUS / 2, -CIRCLE_RADIUS / 3, 0);
+                    textModel = glm::translate(circleModel, translateText);
+                    
+                    anotherTextShader.setMat4("model", textModel);
+                    anotherTextShader.setMat4("view", view);
+                    anotherTextShader.setMat4("projection", projection);
+
+                    IceHockey::RenderText(anotherTextShader, std::to_string(playerId), 0.0, 0.0, 0.75, glm::vec3(0.0, 0.0, 0.0));
                     it++;
                 }
-
-                std::string s = (boost::format("time: %4.5f ms") % currentFrame).str();
-                IceHockey::RenderText(textShader, s, 25.0f, 200.0f, 0.5f, glm::vec3(0.3, 0.7f, 0.9f));
             }
             
             // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -447,6 +343,49 @@ namespace IceHockey {
     
     void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
     {
+        // assume constant text height for now
+        GLfloat h = 0.09 * scale;
+        GLfloat w = 0.05 * scale;
+        GLfloat z = 0.11;
+        
+        // Activate corresponding render state
+        shader.use();
+        glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
+        glActiveTexture(GL_TEXTURE0);
+        glBindVertexArray(TextVAO);
+        
+        // Iterate through all characters
+        std::string::const_iterator c;
+        for (c = text.begin(); c != text.end(); c++)
+        {
+            Character ch = Characters[*c];
+            // Update VBO for each character
+            GLfloat vertices[6][numVComponents + numTComponents] = {
+                { x,     y + h, z,   0.0, 0.0 },
+                { x, y,    z,   0.0, 1.0 },
+                { x + w, y,    z,   1.0, 1.0 },
+                
+                { x, y + h, z,  0.0, 0.0 },
+                { x + w, y, z,   1.0, 1.0 },
+                { x + w, y + h, z,  1.0, 0.0 }
+            };
+            // Render glyph texture over quad
+            glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+            // Update content of VBO memory
+            glBindBuffer(GL_ARRAY_BUFFER, TextVBO);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // Be sure to use glBufferSubData and not glBufferData
+            
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            // Render quad
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            x += w;
+        }
+        glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+    
+    void RenderStaticText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
+    {
         // Activate corresponding render state
         shader.use();
         glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
@@ -466,13 +405,13 @@ namespace IceHockey {
             GLfloat h = ch.Size.y * scale;
             // Update VBO for each character
             GLfloat vertices[6][numVComponents + numTComponents] = {
-                { xpos,     ypos + h,   0.0, 0.0 },
-                { xpos,     ypos,       0.0, 1.0 },
-                { xpos + w, ypos,       1.0, 1.0 },
+                { xpos,     ypos + h, 1.0,   0.0, 0.0 },
+                { xpos,     ypos,    1.0,   0.0, 1.0 },
+                { xpos + w, ypos,    1.0,   1.0, 1.0 },
                 
-                { xpos,     ypos + h,   0.0, 0.0 },
-                { xpos + w, ypos,       1.0, 1.0 },
-                { xpos + w, ypos + h,   1.0, 0.0 }
+                { xpos,     ypos + h, 1.0,  0.0, 0.0 },
+                { xpos + w, ypos,     1.0,   1.0, 1.0 },
+                { xpos + w, ypos + h, 1.0,  1.0, 0.0 }
             };
             // Render glyph texture over quad
             glBindTexture(GL_TEXTURE_2D, ch.TextureID);
