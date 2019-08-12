@@ -135,8 +135,16 @@ for (let i = 0; i < pids.length; i++) {
         let thingThatHappened = aTimeLine[j];
 
         if (thingThatHappened.S == 'L') {
-            thingThatHappened.X = -2.0;
-            thingThatHappened.Y = -2.0;
+            let lastThingThatHappened = aTimeLine[j - 1];
+            thingThatHappened.X = lastThingThatHappened.X;
+
+            let Y2 = lastThingThatHappened.Y;
+
+            if (Y2 > 0) {
+                thingThatHappened.Y = Y2 + 2;
+            } else {
+                thingThatHappened.Y = Y2 - 2;
+            }
         }
 
         if (thingThatHappened.S == 'E') {
@@ -156,9 +164,12 @@ for (let i = 0; i < pids.length; i++) {
                     thingThatHappened.X = X2;    
                 } else {
                     // this guy just entered and left the screen(?)
-                    // just going to put him off screen for now
-                    thingThatHappened.X = -2;
-                    thingThatHappened.Y = -2;
+                    // just going to put at center rink with random offset
+                    let rx = Math.random() * 0.6 - 0.3;
+                    let ry = Math.random() * 0.6 - 0.3;
+
+                    thingThatHappened.X = rx;
+                    thingThatHappened.Y = ry;
                     console.log(`player ${pids[i]} at time ${thingThatHappened.T} entered and just left`);
                 }
             } else {
@@ -166,13 +177,25 @@ for (let i = 0; i < pids.length; i++) {
             }
         }
 
-        thingThatHappened.X += '';
-        thingThatHappened.Y += '';
-        thingThatHappened.T += '';
+        // thingThatHappened.X += '';
+        // thingThatHappened.Y += '';
+        // thingThatHappened.T += '';
 
         // thingThatHappened.S = undefined;
     };
 };
+
+// convert shit to strings
+for (let i = 0; i < pids.length; i++) {
+    let aTimeLine = playerTimeLine[pids[i]];
+
+    for (let j = 0; j < aTimeLine.length; j++) {
+        let thingThatHappened = aTimeLine[j];
+        thingThatHappened.X += '';
+        thingThatHappened.Y += '';
+        thingThatHappened.T += '';
+    }
+}
 
 let playerst = '';
 playerst = [...playersInSecondTeam] + '\n' + giantString;
@@ -186,7 +209,7 @@ fs.writeFile("movements.dat", playerst, function(err) {
     // console.log("Movements was saved!");
 }); 
 
-fs.writeFile('timeline.json', JSON.stringify(playerTimeLine, null, 4), (err) => {
+fs.writeFile('_timeline.json', JSON.stringify(playerTimeLine, null, 4), (err) => {
     if (err) {
         console.log(err);
     }

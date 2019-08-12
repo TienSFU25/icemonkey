@@ -41,7 +41,6 @@ public:
     float overTime = 0.3f;
     float timeLeft = 0.0f;
     int counter = -1;
-    vector<int> playersMovingThisStep;
     
     void move(float deltaTime) {
 //        if (timeLeft < 0.01f) {
@@ -78,14 +77,30 @@ public:
 //        for (int const& playerId: playersMovingThisStep) {
 //            players[playerId].move(deltaTime);
 //        }
+        vector<int> playersLeavingThisStep;
+        vector<int> allPlayers;
         for (map<int,Playa>::iterator it=players.begin(); it!=players.end(); ++it) {
             int pid = it -> first;
             Playa& player = it -> second;
-
-//            if (pid == 302) {
-                player.move(deltaTime);
-//            }
+            player.move(deltaTime);
         }
+        
+        vector<int> playersMovingThisStep = allPlayers;
+//        if (!playersLeavingThisStep.empty()) {
+//            playersMovingThisStep = playersLeavingThisStep;
+//
+//            string s = "moving this step: ";
+//            for (int pid: playersMovingThisStep) {
+//                s += std::to_string(pid) + ", ";
+//            }
+//
+//            cout << s << endl;
+//        }
+        
+//        for (int pid : playersMovingThisStep) {
+//            Playa& player = players.find(pid) -> second;
+//            player.move(deltaTime);
+//        }
     }
     
     void readTheDatFile() {
@@ -104,7 +119,7 @@ public:
         
         string wholeThing;
         string line;
-        ifstream myfile ("/Users/user/Documents/361/opengl/icehockey/icehockey/scripts/timeline.json");
+        ifstream myfile ("/Users/user/Documents/361/opengl/icehockey/icehockey/scripts/_timeline.json");
 //        vector<int> timeStepsToUpdate;
 //        vector<int> timeStepsToRemove;
 //
@@ -128,7 +143,7 @@ public:
                     Pair p = {.X = stringToFloat(position["X"]),
                               .Y = stringToFloat(position["Y"]),
                               .T = stringToFloat(position["T"]),
-                              .isEnter = position["S"] == "E"
+                              .S = position["S"]
                     };
                     destinations.push_back(p);
                 }

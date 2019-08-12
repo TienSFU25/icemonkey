@@ -5,14 +5,15 @@
 #include <vector>
 #include "utils.h"
 
-const Pair defaultInitialPosition = {.X = -2.0f, .Y = 2.0f};
+const Pair defaultInitialPosition = {.X = -2.0f, .Y = 2.0f, .T = 0.0f};
 
 class Playa
 {
 public:
     bool isHomeTeam;
     std::vector<Pair> destinations;
-    
+    bool isGoingToTeleport = false;
+
     Playa(std::vector<Pair> d, int pid = -1, bool _isHomeTeam = false)
     {
         destinations = d;
@@ -20,11 +21,18 @@ public:
         isHomeTeam = _isHomeTeam;
 
         counter = 1;
-        nextDestination = destinations[counter];
+        nextDestination = destinations[0];
+
+        xPos = defaultInitialPosition.X;
+        yPos = defaultInitialPosition.Y;
+//        xPos = 0 + destinations[0].X;
+//        yPos = 0 + destinations[0].Y;
+        timeRemain = nextDestination.T / Sim_Speed;
         
-        xPos = 0 + destinations[0].X;
-        yPos = 0 + destinations[0].Y;
-        timeRemain = (nextDestination.T - destinations[0].T) / Sim_Speed;
+        if (nextDestination.S == "E") {
+            xPos = nextDestination.X;
+            yPos = nextDestination.Y;
+        }
     }
     
 //    void setMoveTo(Pair _destination, float overTime) {
@@ -73,8 +81,24 @@ public:
         float xRemain = nextDestination.X - xPos;
         float yRemain = nextDestination.Y - yPos;
         
+        if (isGoingToTeleport) {
+            timeRemain -= deltaTime;
+            
+            if (timeRemain < 0.01f) {
+                isGoingToTeleport = false;
+                xPos = destinations[counter - 1].X;
+                yPos = destinations[counter - 1].Y;
+
+//                nextDestination = destinations[counter];
+//                setNextDest();
+                return move(deltaTime);
+            }
+            
+            return;
+        }
+        
         // move X, Y
-        if (timeRemain > 0.01f && (abs(xRemain) > 0.01f || abs(yRemain) > 0.01f)) {
+        if (timeRemain > 0.01f) {
             float stepX = (deltaTime / timeRemain) * xRemain;
             float stepY = (deltaTime / timeRemain) * yRemain;
             
@@ -84,23 +108,48 @@ public:
         } else {
             if (counter < destinations.size()) {
                 nextDestination = destinations[counter];
+                isGoingToTeleport = false;
                 
                 // "teleport" and just stand there
-                if (nextDestination.isEnter) {
-                    xPos = nextDestination.X;
-                    yPos = nextDestination.Y;
+                if (nextDestination.S == "E") {
+//                    xPos = nextDestination.X;
+//                    yPos = nextDestination.Y;
+                    isGoingToTeleport = true;
+                    setNextDest();
+//                    counter -= 1;
+                    return move(deltaTime);
+                } else if (nextDestination.S == "L") {
+//                    isGoingToTeleport = true;
+//                    setNextDest();
+//                    counter -= 1;
+//                    return move(deltaTime);
                 }
+
 //                std::cout << "moving " << id << " to (" << nextDestination.X << ", " << nextDestination.Y << ")" << std::endl;
-                timeRemain = (nextDestination.T - destinations[counter - 1].T) / Sim_Speed;
-                counter += 1;
+                setNextDest();
+                move(deltaTime);
             }
         }
+    }
+    
+    void setNextDest() {
+        float timeExceeded = timeRemain * -1;
+        Pair previousDestination;
+        
+        if (counter > 0) {
+            previousDestination = destinations[counter - 1];
+        } else {
+            previousDestination = defaultInitialPosition;
+        }
+        
+        timeRemain = (nextDestination.T - previousDestination.T) / Sim_Speed;
+        timeRemain -= timeExceeded;
+        counter += 1;
     }
     
     glm::vec3 getTranslationMatrix() {
         return glm::vec3(xPos, yPos, 0.0f);
     }
-
     
 private:
     int id;
