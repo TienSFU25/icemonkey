@@ -199,7 +199,7 @@ for (let i = 0; i < pids.length; i++) {
 
 let playerst = '';
 playerst = [...playersInSecondTeam] + '\n' + giantString;
-playerst = [...playersInFirstTeam] + '\n' + giantString;
+playerst = [...playersInFirstTeam] + '\n' + playerst;
 
 fs.writeFile("movements.dat", playerst, function(err) {
     if(err) {
@@ -207,6 +207,17 @@ fs.writeFile("movements.dat", playerst, function(err) {
     }
 
     // console.log("Movements was saved!");
+}); 
+
+playerst = '';
+playerst = [...playersInFirstTeam] + '\n' + [...playersInSecondTeam] + '\n';
+
+fs.writeFile("players.dat", playerst, function(err) {
+    if(err) {
+        return console.log(err);
+    }
+
+    console.log("players was saved!");
 }); 
 
 fs.writeFile('_timeline.json', JSON.stringify(playerTimeLine, null, 4), (err) => {

@@ -13,6 +13,7 @@
 #include <fstream>
 #include <string>
 #include <map>
+#include <set>
 #include <algorithm>
 #include <iterator>
 #include <nlohmann/json.hpp>
@@ -120,9 +121,23 @@ public:
         string wholeThing;
         string line;
         ifstream myfile ("/Users/user/Documents/361/opengl/icehockey/icehockey/scripts/_timeline.json");
-//        vector<int> timeStepsToUpdate;
-//        vector<int> timeStepsToRemove;
-//
+        ifstream myfile2 ("/Users/user/Documents/361/opengl/icehockey/icehockey/scripts/players.dat");
+        
+        set<int> playersInFirstTeam;
+        
+        if (myfile2.is_open()) {
+            getline(myfile2, line);
+            vector<string> splitted = split(line, ',');
+            
+            for (string const& s: splitted) {
+                int playerId = stringToInt(s);
+                playersInFirstTeam.insert(playerId);
+            }
+            
+            myfile2.close();
+        }
+
+        
         if (myfile.is_open())
         {
             int i = 0;
@@ -134,7 +149,7 @@ public:
             
             map<string, vector<map<string, string>>> parsed = json::parse(wholeThing);;
             for (map<string, vector<map<string, string>>>::iterator it=parsed.begin(); it!=parsed.end(); ++it) {
-                string playerId = it -> first;
+                int playerId = stringToInt(it -> first);
                 vector<Pair> destinations;
                 
                 vector<map<string, string>> playerTimeline = it -> second;
@@ -148,29 +163,15 @@ public:
                     destinations.push_back(p);
                 }
                 
-                Playa newPlayer(destinations, stringToInt(playerId), false);
-                players.insert(pair<int, Playa>(stringToInt(playerId), newPlayer));
+                bool isThisGuyHomeTeam = playersInFirstTeam.find(playerId) != playersInFirstTeam.end();
+                Playa newPlayer(destinations, playerId, isThisGuyHomeTeam);
+                players.insert(pair<int, Playa>(playerId, newPlayer));
             }
                         
             myfile.close();
         }
         
-//                if (i == 0) {
-//                    vector<string> splitted = split(line, ',');
-//
-//                    for (string const& s: splitted) {
-//                        int playerId = stringToInt(s);
-//                        Playa newPlayer(defaultInitialPosition, false);
-//                        players[playerId] = newPlayer;
-//                    }
-//                } else if (i == 1) {
-//                    vector<string> splitted = split(line, ',');
-//
-//                    for (string const& s: splitted) {
-//                        int playerId = stringToInt(s);
-//                        Playa newPlayer(defaultInitialPosition, true);
-//                        players[playerId] = newPlayer;
-//                    }
+
 //                } else {
 //                    // 0|1152|0.312866|0.752941||||
 //                    // isHome | playerId | x | y | homeLeave | homeEnter | awayLeave | awayEnter
