@@ -29,7 +29,7 @@ namespace IceHockey {
     bool loop = false;
     static const int numVComponents = 3;
     static const int numTComponents = 2;
-    float CIRCLE_RADIUS = 0.1f;
+    float CIRCLE_RADIUS = 0.07f;
 
     // timing
     float deltaTime = 0.0f;
@@ -49,8 +49,8 @@ namespace IceHockey {
         circleVertices.push_back(CIRCLE_RADIUS * cos(0));
         circleVertices.push_back(CIRCLE_RADIUS * sin(0));
         circleVertices.push_back(0.1f);
-        circleVertices.push_back(ndcToTexCoord(cos(0)));
-        circleVertices.push_back(ndcToTexCoord(sin(0)));
+        circleVertices.push_back(Utils::ndcToTexCoord(cos(0)));
+        circleVertices.push_back(Utils::ndcToTexCoord(sin(0)));
         
         for (int i = 0; i < circle_points; i++)
         {
@@ -59,8 +59,8 @@ namespace IceHockey {
             circleVertices.push_back(0.1f);
             
             // texture coords
-            circleVertices.push_back(ndcToTexCoord(cos(theta)));
-            circleVertices.push_back(ndcToTexCoord(sin(theta)));
+            circleVertices.push_back(Utils::ndcToTexCoord(cos(theta)));
+            circleVertices.push_back(Utils::ndcToTexCoord(sin(theta)));
             
             theta += dtheta;
         }
@@ -69,8 +69,8 @@ namespace IceHockey {
         circleVertices.push_back(CIRCLE_RADIUS * cos(0));
         circleVertices.push_back(CIRCLE_RADIUS * sin(0));
         circleVertices.push_back(0.1f);
-        circleVertices.push_back(ndcToTexCoord(cos(0)));
-        circleVertices.push_back(ndcToTexCoord(sin(0)));
+        circleVertices.push_back(Utils::ndcToTexCoord(cos(0)));
+        circleVertices.push_back(Utils::ndcToTexCoord(sin(0)));
         
         return circleVertices;
     }
@@ -135,8 +135,8 @@ namespace IceHockey {
 
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
-        float normalizedRinkWidth = normalize(Rink_Width_Max);
-        float normalizedRinkHeight = normalize(Rink_Height_Max);
+        float normalizedRinkWidth = Utils::normalize(Rink_Width_Max);
+        float normalizedRinkHeight = Utils::normalize(Rink_Height_Max);
 
         std::vector<float> planeVertices = {
             -normalizedRinkWidth, -normalizedRinkHeight,  0.0f,  0.0f, 0.0f, // bottom-left
@@ -289,21 +289,25 @@ namespace IceHockey {
                     glm::vec3 trans = playa.getTranslationMatrix();
                     circleModel = glm::translate(circleModel, trans);
                     
+                    if (playa.getState() == Entering) {
+                        circleShader.setVec3("aColor", Colors::LawnGreen);
+                    } else if (playa.getState() == Leaving) {
+                        circleShader.setVec3("aColor", Colors::OrangeRed);
+                    } else {
+                        if (playa.isHomeTeam) {
+                            glActiveTexture(GL_TEXTURE0);
+                            glBindTexture(GL_TEXTURE_2D, homeTexture);
+                            circleShader.setVec3("aColor", Colors::LightPurp);
+                        } else {
+                            glActiveTexture(GL_TEXTURE0);
+                            glBindTexture(GL_TEXTURE_2D, awayTexture);
+                            circleShader.setVec3("aColor", Colors::Orange);
+                        }
+                    }
+                    
                     if (playa.isHomeTeam) {
-                        glActiveTexture(GL_TEXTURE0);
-                        glBindTexture(GL_TEXTURE_2D, homeTexture);
-                        
-                        // light purp
-                        circleShader.setVec3("aColor", glm::vec3(138.0 / 255.0, 43.0 / 255.0, 226.0 / 255.0));
-                        
                         // avoid z fighting
                         circleModel = glm::translate(circleModel, glm::vec3(0.0, 0.0, 0.1f));
-                    } else {
-                        glActiveTexture(GL_TEXTURE0);
-                        glBindTexture(GL_TEXTURE_2D, awayTexture);
-                        
-                        // orange
-                        circleShader.setVec3("aColor", glm::vec3(255.0 / 255.0, 140.0 / 255.0, 0.0 / 255.0));
                     }
                     
                     circleShader.setMat4("model", circleModel);
@@ -345,8 +349,8 @@ namespace IceHockey {
     void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
     {
         // assume constant text height for now
-        GLfloat h = 0.09 * scale;
-        GLfloat w = 0.05 * scale;
+        GLfloat h = CIRCLE_RADIUS * scale;
+        GLfloat w = CIRCLE_RADIUS * 0.6 * scale;
         GLfloat z = 0.11;
         
         // Activate corresponding render state

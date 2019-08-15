@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE252ADB23055FDE002DA851 /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE2DADE522F7D1C60037AA55 /* common.cpp */; };
 		CE2689D522FD31440020C532 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = CE2689D422FD31440020C532 /* glad.c */; };
 		CE2689D622FD33B10020C532 /* hockey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE2DAE0422F7D6A00037AA55 /* hockey.cpp */; };
-		CE2689D722FD350A0020C532 /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE2DADE522F7D1C60037AA55 /* common.cpp */; };
 		CE2DADD122F7CEAF0037AA55 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE2DADD022F7CEAF0037AA55 /* main.cpp */; };
 		CE2DADDE22F7D1010037AA55 /* libglfw.3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2DADDC22F7D1010037AA55 /* libglfw.3.3.dylib */; };
 /* End PBXBuildFile section */
@@ -27,6 +27,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CE252AD923055CFD002DA851 /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Constants.h; path = icehockey/shared/Constants.h; sourceTree = SOURCE_ROOT; };
 		CE26899522FA63BB0020C532 /* giantFile.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = giantFile.js; path = icehockey/scripts/giantFile.js; sourceTree = SOURCE_ROOT; };
 		CE26899622FA63BB0020C532 /* reader.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = reader.js; path = icehockey/scripts/reader.js; sourceTree = SOURCE_ROOT; };
 		CE26899722FA63BB0020C532 /* smaller.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = smaller.js; path = icehockey/scripts/smaller.js; sourceTree = SOURCE_ROOT; };
@@ -54,7 +55,6 @@
 		CE2DAE0022F7D69F0037AA55 /* linha.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = linha.jpg; path = icehockey/icemonkey/linha.jpg; sourceTree = SOURCE_ROOT; };
 		CE2DAE0122F7D69F0037AA55 /* away.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = away.jpg; path = icehockey/icemonkey/away.jpg; sourceTree = SOURCE_ROOT; };
 		CE2DAE0222F7D69F0037AA55 /* hockey.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hockey.hpp; path = icehockey/icemonkey/hockey.hpp; sourceTree = SOURCE_ROOT; };
-		CE2DAE0322F7D6A00037AA55 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utils.h; path = icehockey/icemonkey/utils.h; sourceTree = SOURCE_ROOT; };
 		CE2DAE0422F7D6A00037AA55 /* hockey.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = hockey.cpp; path = icehockey/icemonkey/hockey.cpp; sourceTree = SOURCE_ROOT; };
 		CE2DAE0522F7D6A00037AA55 /* Reada.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reada.h; path = icehockey/icemonkey/Reada.h; sourceTree = SOURCE_ROOT; };
 		CE2DAE0722F7D6A00037AA55 /* tiena.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = tiena.jpg; path = icehockey/icemonkey/tiena.jpg; sourceTree = SOURCE_ROOT; };
@@ -147,6 +147,7 @@
 				CE2DADE322F7D1C60037AA55 /* common.hpp */,
 				CE2DADE222F7D1C60037AA55 /* shader_s.h */,
 				CE2DADE622F7D1C60037AA55 /* stb_image.h */,
+				CE252AD923055CFD002DA851 /* Constants.h */,
 			);
 			path = shared;
 			sourceTree = "<group>";
@@ -164,7 +165,6 @@
 				CE2DAE0522F7D6A00037AA55 /* Reada.h */,
 				CE2DAE0B22F7D6A00037AA55 /* rink.png */,
 				CE2DAE0722F7D6A00037AA55 /* tiena.jpg */,
-				CE2DAE0322F7D6A00037AA55 /* utils.h */,
 			);
 			name = icemonkey;
 			path = /Users/user/Documents/361/opengl/icehockey/icehockey/icemonkey;
@@ -226,7 +226,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE2689D722FD350A0020C532 /* common.cpp in Sources */,
+				CE252ADB23055FDE002DA851 /* common.cpp in Sources */,
 				CE2689D622FD33B10020C532 /* hockey.cpp in Sources */,
 				CE2DADD122F7CEAF0037AA55 /* main.cpp in Sources */,
 				CE2689D522FD31440020C532 /* glad.c in Sources */,

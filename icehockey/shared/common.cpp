@@ -18,6 +18,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+float rinkMaxDimension = fmax(Rink_Width_Max, Rink_Height_Max);
+
 namespace Utils {
     // utility function for loading a 2D texture from file
     // ---------------------------------------------------
@@ -132,5 +134,55 @@ namespace Utils {
         FT_Done_FreeType(ft);
         
         return Characters;
+    }
+    
+    std::vector<std::string> split(const std::string& str, char delim)
+    {
+        std::vector<std::string> container;
+        
+        int start = 0;
+        int end = str.find(delim);
+        while (end != std::string::npos)
+        {
+            //        std::cout << s.substr(start, end - start) << std::endl;
+            container.push_back(str.substr(start, end - start));
+            start = end + 1;
+            end = str.find(delim, start);
+        }
+        
+        container.push_back(str.substr(start, end - start));
+        
+        return container;
+    }
+    
+    Pair normalize(Pair p) {
+        Pair r = {.X = p.X / rinkMaxDimension, .Y = p.Y / rinkMaxDimension};
+        return r;
+    }
+    
+    float normalize(float f) {
+        return f / rinkMaxDimension;
+    }
+    
+    float stringToFloat(std::string s) {
+        std::stringstream geek(s);
+        
+        float x = 0;
+        geek >> x;
+        
+        return x;
+    }
+    
+    int stringToInt(std::string s) {
+        std::stringstream geek(s);
+        
+        int x = 0;
+        geek >> x;
+        
+        return x;
+    }
+    
+    float ndcToTexCoord(float f) {
+        return (f + 1) / 2;
     }
 }

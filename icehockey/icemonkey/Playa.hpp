@@ -3,7 +3,6 @@
 
 #include <glm/glm.hpp>
 #include <vector>
-#include "utils.h"
 
 const Pair defaultInitialPosition = {.X = -2.0f, .Y = 2.0f, .T = 0.0f};
 
@@ -25,8 +24,6 @@ public:
 
         xPos = defaultInitialPosition.X;
         yPos = defaultInitialPosition.Y;
-//        xPos = 0 + destinations[0].X;
-//        yPos = 0 + destinations[0].Y;
         timeRemain = nextDestination.T / Sim_Speed;
         
         if (nextDestination.S == "E") {
@@ -34,49 +31,7 @@ public:
             yPos = nextDestination.Y;
         }
     }
-    
-//    void setMoveTo(Pair _destination, float overTime) {
-//        destination = _destination;
-//
-//        timeRemain = overTime;
-//    }
-//
-//    void setMoveOffscreen(float overTime) {
-//        setMoveTo(defaultInitialPosition, overTime);
-//    }
-    
-//    void leave(float deltaTime, float overTime) {
-//        if (state == Leaving) {
-//            timeRemain = overTime;
-//            state = Moving;
-//            nextDestination = defaultInitialPosition;
-//            counter += 1;
-//            move(deltaTime);
-//        }
-//    }
-//
-//    void enter(float deltaTime, float globalTime) {
-//        if (state == Entering) {
-////            if (counter == 0) {
-//            nextDestination = destinations[counter];
-//            timeRemain = nextDestination.T - globalTime;
-//            state = Moving;
-//            move(deltaTime);
-//
-//            counter += 1;
-////            } else {
-////                counter += 1;
-////
-////                if (counter < destinations.size()) {
-////                    nextDestination = destinations[counter];
-////                    timeRemain = nextDestination.T - globalTime;
-////                    state = Moving;
-////                    move(deltaTime);
-////                }
-////            }
-//        }
-//    }
-    
+
     void move(float deltaTime) {
         float xRemain = nextDestination.X - xPos;
         float yRemain = nextDestination.Y - yPos;
@@ -89,8 +44,6 @@ public:
                 xPos = destinations[counter - 1].X;
                 yPos = destinations[counter - 1].Y;
 
-//                nextDestination = destinations[counter];
-//                setNextDest();
                 return move(deltaTime);
             }
             
@@ -112,20 +65,11 @@ public:
                 
                 // "teleport" and just stand there
                 if (nextDestination.S == "E") {
-//                    xPos = nextDestination.X;
-//                    yPos = nextDestination.Y;
                     isGoingToTeleport = true;
                     setNextDest();
-//                    counter -= 1;
                     return move(deltaTime);
-                } else if (nextDestination.S == "L") {
-//                    isGoingToTeleport = true;
-//                    setNextDest();
-//                    counter -= 1;
-//                    return move(deltaTime);
                 }
 
-//                std::cout << "moving " << id << " to (" << nextDestination.X << ", " << nextDestination.Y << ")" << std::endl;
                 setNextDest();
                 move(deltaTime);
             }
@@ -149,6 +93,16 @@ public:
     
     glm::vec3 getTranslationMatrix() {
         return glm::vec3(xPos, yPos, 0.0f);
+    }
+    
+    PlayerState getState() {
+        if (nextDestination.S == "E") {
+            return Entering;
+        } else if (nextDestination.S == "L") {
+            return Leaving;
+        } else {
+            return Moving;
+        }
     }
     
 private:
