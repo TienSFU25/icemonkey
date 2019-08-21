@@ -61,7 +61,7 @@ namespace IceHockey {
         circleVertices.push_back(0.1f);
         circleVertices.push_back(Utils::ndcToTexCoord(cos(0)));
         circleVertices.push_back(Utils::ndcToTexCoord(sin(0)));
-        circleVertices.push_back();
+        circleVertices.push_back(CIRC_ID);
         
         for (int i = 0; i < circle_points; i++)
         {
@@ -72,7 +72,8 @@ namespace IceHockey {
             // texture coords
             circleVertices.push_back(Utils::ndcToTexCoord(cos(theta)));
             circleVertices.push_back(Utils::ndcToTexCoord(sin(theta)));
-            
+            circleVertices.push_back(CIRC_ID);
+
             theta += dtheta;
         }
         
@@ -82,7 +83,8 @@ namespace IceHockey {
         circleVertices.push_back(0.1f);
         circleVertices.push_back(Utils::ndcToTexCoord(cos(0)));
         circleVertices.push_back(Utils::ndcToTexCoord(sin(0)));
-        
+        circleVertices.push_back(CIRC_ID);
+
         return circleVertices;
     }
     
@@ -135,17 +137,16 @@ namespace IceHockey {
         // build and compile our shader zprogram
         // ------------------------------------
         std::string loc =  "/Users/user/Documents/361/opengl/icehockey/icehockey/shaders/";
-        std::string F1 = loc + "rink.vs";
-        std::string F2 = loc + "rink.fs";
-        std::string F3 = loc + "circle.fs";
+        std::string F1 = loc + "scene.vs";
+        std::string F3 = loc + "colorOrTexture.fs";
         std::string F4 = loc + "text.vs";
         std::string F5 = loc + "text.fs";
         std::string F6 = loc + "quad.vs";
         
-        Shader lightingShader(F1, F2);
+        Shader lightingShader(F1, F3);
         Shader circleShader(F1, F3);
         Shader textShader(F4, F5);
-        Shader quadShader(F6, F2);
+        Shader quadShader(F6, F3);
 
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
@@ -153,12 +154,12 @@ namespace IceHockey {
         float normalizedRinkHeight = Utils::normalize(Rink_Height_Max);
 
         std::vector<float> planeVertices = {
-            -normalizedRinkWidth, -normalizedRinkHeight,  0.0f,  0.0f, 0.0f, // bottom-left
-            normalizedRinkWidth, -normalizedRinkHeight,  0.0f,  1.0f, 0.0f, // bottom-right
-            normalizedRinkWidth,  normalizedRinkHeight,  0.0f,  1.0f, 1.0f, // top-right
-            normalizedRinkWidth,  normalizedRinkHeight,  0.0f,  1.0f, 1.0f, // top-right
-            -normalizedRinkWidth,  normalizedRinkHeight,  0.0f,  0.0f, 1.0f, // top-left
-            -normalizedRinkWidth, -normalizedRinkHeight,  0.0f,  0.0f, 0.0f, // bottom-left
+            -normalizedRinkWidth, -normalizedRinkHeight,  0.0f,  0.0f, 0.0f, RINK_ID, // bottom-left
+            normalizedRinkWidth, -normalizedRinkHeight,  0.0f,  1.0f, 0.0f, RINK_ID, // bottom-right
+            normalizedRinkWidth,  normalizedRinkHeight,  0.0f,  1.0f, 1.0f, RINK_ID, // top-right
+            normalizedRinkWidth,  normalizedRinkHeight,  0.0f,  1.0f, 1.0f, RINK_ID, // top-right
+            -normalizedRinkWidth,  normalizedRinkHeight,  0.0f,  0.0f, 1.0f, RINK_ID, // top-left
+            -normalizedRinkWidth, -normalizedRinkHeight,  0.0f,  0.0f, 0.0f, RINK_ID // bottom-left
         };
         
         int numAttribPerVertex = 5;
@@ -175,12 +176,16 @@ namespace IceHockey {
         glBindVertexArray(planeVAO);
         
         // position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         
         // texture attribute
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
+
+        // object ID attribute
+        glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(5 * sizeof(float)));
+        glEnableVertexAttribArray(2);
         
         // circle vertex
         unsigned int circleVBO, circleVAO;
@@ -199,12 +204,16 @@ namespace IceHockey {
         glBindVertexArray(circleVAO);
 
         // position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         
         // texture attribute
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
+        
+        // object ID attribute
+        glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(5 * sizeof(float)));
+        glEnableVertexAttribArray(2);
         
         // load textures
         unsigned int someTexture = Utils::loadTexture("/Users/user/Documents/361/opengl/icehockey/icehockey/icemonkey/rink.png");

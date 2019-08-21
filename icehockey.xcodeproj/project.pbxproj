@@ -34,10 +34,9 @@
 		CE26899822FA63BB0020C532 /* movements.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = movements.dat; path = icehockey/scripts/movements.dat; sourceTree = SOURCE_ROOT; };
 		CE26899922FB734F0020C532 /* timeline.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = timeline.json; path = icehockey/scripts/timeline.json; sourceTree = SOURCE_ROOT; };
 		CE2689CE22FD2C7F0020C532 /* arial.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = arial.ttf; sourceTree = "<group>"; };
-		CE2689CF22FD2EAA0020C532 /* rink.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = rink.vs; path = icehockey/shaders/rink.vs; sourceTree = SOURCE_ROOT; };
+		CE2689CF22FD2EAA0020C532 /* scene.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = scene.vs; path = icehockey/shaders/scene.vs; sourceTree = SOURCE_ROOT; };
 		CE2689D022FD2EAA0020C532 /* text.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = text.vs; path = icehockey/shaders/text.vs; sourceTree = SOURCE_ROOT; };
-		CE2689D122FD2EAA0020C532 /* circle.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = circle.fs; path = icehockey/shaders/circle.fs; sourceTree = SOURCE_ROOT; };
-		CE2689D222FD2EAA0020C532 /* rink.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = rink.fs; path = icehockey/shaders/rink.fs; sourceTree = SOURCE_ROOT; };
+		CE2689D122FD2EAA0020C532 /* colorOrTexture.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = colorOrTexture.fs; path = icehockey/shaders/colorOrTexture.fs; sourceTree = SOURCE_ROOT; };
 		CE2689D322FD2EAA0020C532 /* text.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = text.fs; path = icehockey/shaders/text.fs; sourceTree = SOURCE_ROOT; };
 		CE2689D422FD31440020C532 /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glad.c; sourceTree = "<group>"; };
 		CE2DADCD22F7CEAF0037AA55 /* icehockey */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = icehockey; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -90,9 +89,8 @@
 		CE2689CA22FD2BDE0020C532 /* shaders */ = {
 			isa = PBXGroup;
 			children = (
-				CE2689D122FD2EAA0020C532 /* circle.fs */,
-				CE2689D222FD2EAA0020C532 /* rink.fs */,
-				CE2689CF22FD2EAA0020C532 /* rink.vs */,
+				CE2689D122FD2EAA0020C532 /* colorOrTexture.fs */,
+				CE2689CF22FD2EAA0020C532 /* scene.vs */,
 				CE2689D322FD2EAA0020C532 /* text.fs */,
 				CE2689D022FD2EAA0020C532 /* text.vs */,
 				CE621B2D230BFCBD00A5A643 /* quad.vs */,
