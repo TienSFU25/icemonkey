@@ -19,6 +19,7 @@
 
 // for convenience
 using json = nlohmann::json;
+using namespace std;
 
 namespace IceHockey {
     // camera
@@ -30,7 +31,16 @@ namespace IceHockey {
     static const int numVComponents = 3;
     static const int numTComponents = 2;
     float CIRCLE_RADIUS = 0.07f;
-
+    
+    float CIRC_ID = 1.0;
+    float RINK_ID = 2.0;
+//    float
+    
+    int _r, _g, _b;
+    int& r = _r;
+    int& b = _b;
+    int& g = _g;
+    
     // timing
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
@@ -51,6 +61,7 @@ namespace IceHockey {
         circleVertices.push_back(0.1f);
         circleVertices.push_back(Utils::ndcToTexCoord(cos(0)));
         circleVertices.push_back(Utils::ndcToTexCoord(sin(0)));
+        circleVertices.push_back();
         
         for (int i = 0; i < circle_points; i++)
         {
@@ -77,8 +88,8 @@ namespace IceHockey {
     
     int main()
     {
-        Reada r;
-        r.readTheDatFile();
+        Reada rd;
+        rd.readTheDatFile();
         
         // glfw: initialize and configure
         // ------------------------------
@@ -106,7 +117,8 @@ namespace IceHockey {
         glfwSetScrollCallback(window, IceHockey::scroll_callback);
         
         // tell GLFW to capture our mouse
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+//        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         
         // glad: load all OpenGL function pointers
         // ---------------------------------------
@@ -128,10 +140,12 @@ namespace IceHockey {
         std::string F3 = loc + "circle.fs";
         std::string F4 = loc + "text.vs";
         std::string F5 = loc + "text.fs";
+        std::string F6 = loc + "quad.vs";
         
         Shader lightingShader(F1, F2);
         Shader circleShader(F1, F3);
         Shader textShader(F4, F5);
+        Shader quadShader(F6, F2);
 
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
@@ -169,12 +183,13 @@ namespace IceHockey {
         glEnableVertexAttribArray(1);
         
         // circle vertex
+        unsigned int circleVBO, circleVAO;
+        int numCircleVertices;
+
         std::vector<float> circleVertices = initCircleVertices();
-        int numCircleVertices = (int)circleVertices.size() / 3;
-        std::cout << numCircleVertices << std::endl;
+        numCircleVertices = (int)circleVertices.size() / 3;
         
         // circle uses different vertices and VAO
-        unsigned int circleVBO, circleVAO;
         glGenBuffers(1, &circleVBO);
         glGenVertexArrays(1, &circleVAO);
 
@@ -219,6 +234,68 @@ namespace IceHockey {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
         
+        glfwSetMouseButtonCallback(window, IceHockey::mouse_button_callback);
+        
+        float quadVertices[] = {
+//            -0.5f,  0.5f, 0.5, 0.0f, 1.0f,
+//            -0.5f, -0.5f, 0.5, 0.0f, 0.0f,
+//            0.5f, -0.5f, 0.5, 1.0f, 0.0f,
+//
+//            -0.5f,  0.5f, 0.5, 0.0f, 1.0f,
+//            0.5f, -0.5f, 0.5, 1.0f, 0.0f,
+//            0.5f,  0.5f, 0.5, 1.0f, 1.0f
+            
+            // positions   // texCoords
+            -1.0f,  1.0f, 0.5, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.5, 0.0f, 0.0f,
+            1.0f, -1.0f, 0.5, 1.0f, 0.0f,
+
+            -1.0f,  1.0f, 0.5, 0.0f, 1.0f,
+            1.0f, -1.0f, 0.5, 1.0f, 0.0f,
+            1.0f,  1.0f, 0.5, 1.0f, 1.0f
+        };
+        
+        // screen quad VAO
+        unsigned int quadVAO, quadVBO;
+        glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        
+        // framebuffer configuration
+        // -------------------------
+        unsigned int framebuffer;
+        glGenFramebuffers(1, &framebuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        // create a color attachment texture
+        unsigned int textureColorbuffer;
+        glGenTextures(1, &textureColorbuffer);
+        glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        
+        // create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+        unsigned int rbo;
+        glGenRenderbuffers(1, &rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT); // use a single renderbuffer object for both a depth AND stencil buffer.
+        
+        // attach color/depth/stencil "attachments" (wtf?) to framebuffer
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+        
+        // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+
+        bool d = true;
+        
         // render loop
         // -----------
         while (!glfwWindowShouldClose(window))
@@ -228,16 +305,21 @@ namespace IceHockey {
             float currentFrame = glfwGetTime();
             deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
-            
             if (!loop) {
                 // input
                 // -----
                 IceHockey::processInput(window);
                 
-                r.move(deltaTime);
+                rd.move(deltaTime);
 
                 // render
                 // ------
+                glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+                glEnable(GL_DEPTH_TEST);
+
+//                glClear(GL_COLOR_BUFFER_BIT);
+//                glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessery actually, since we won't be able to see behind the quad anyways)
+                
                 glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 
@@ -271,14 +353,14 @@ namespace IceHockey {
                 std::string s = (boost::format("time: %4.5f ms") % currentFrame).str();
                 IceHockey::RenderStaticText(textShader, s, -W / 2 + 50, -H / 2 + 50, 0.5, glm::vec3(0.3, 0.7f, 0.9f));
 
-                std::map<int, Playa>::iterator it = r.players.begin();
+                std::map<int, Playa>::iterator it = rd.players.begin();
 
                 // draw the circles
                 circleShader.use();
                 circleShader.setMat4("projection", projection);
                 circleShader.setMat4("view", view);
 
-                while(it != r.players.end()) {
+                while(it != rd.players.end()) {
                     circleShader.use();
                     glBindVertexArray(circleVAO);
 
@@ -325,12 +407,47 @@ namespace IceHockey {
                     IceHockey::RenderText(textShader, std::to_string(playerId), 0.0, 0.0, 0.75, glm::vec3(0.0, 0.0, 0.0));
                     it++;
                 }
+                
+//                glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+//                glClear(GL_COLOR_BUFFER_BIT);
+//                glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessery actually, since we won't be able to see behind the quad anyways)
+                
+                // render some random thing in the made up framebuffer
+//                circleShader.use();
+//                glBindVertexArray(circleVAO);
+//
+//                glm::mat4 circleModel = glm::mat4(1.0f);
+//                glm::vec3 trans = glm::vec3(0.5, 0.5, 0.1);
+//                circleModel = glm::translate(circleModel, trans);
+//
+//                circleShader.setVec3("aColor", glm::vec3(r / 255.0, g / 255.0, b / 255.0));
+//                circleShader.setMat4("model", circleModel);
+//                glDrawArrays(GL_TRIANGLE_FAN, 0, numCircleVertices);
+                
+                // now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                glDisable(GL_DEPTH_TEST);
+                
+                // clear all relevant buffers
+                glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessery actually, since we won't be able to see behind the quad anyways)
+                glClear(GL_COLOR_BUFFER_BIT);
+                
+                quadShader.use();
+                glBindVertexArray(quadVAO);
+                glBindTexture(GL_TEXTURE_2D, textureColorbuffer);    // use the color attachment texture as the texture of the quad plane
+                glDrawArrays(GL_TRIANGLES, 0, 6);
             }
             
             // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
             // -------------------------------------------------------------------------------
             glfwSwapBuffers(window);
             glfwPollEvents();
+            
+            if (d) {
+                // center mr mouse
+                glfwSetCursorPos(window, SCR_WIDTH / 2, SCR_HEIGHT / 2);
+                d = false;
+            }
         }
         
         // optional: de-allocate all resources once they've outlived their purpose:
@@ -482,7 +599,8 @@ namespace IceHockey {
         
         lastX = xpos;
         lastY = ypos;
-        
+//        std::cout << lastX << ", " << lastY << std::endl;
+
         camera.ProcessMouseMovement(xoffset, yoffset);
     }
     
@@ -491,5 +609,58 @@ namespace IceHockey {
     void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     {
         camera.ProcessMouseScroll(yoffset);
+    }
+    
+    void mouse_button_callback(GLFWwindow* window, int button, int action, int mode) {
+        std::cout << "left mouse click!" << std::endl;
+
+        GLenum format = GL_RGBA;
+        const int components = 4;
+
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+//            switch(format) {
+//                case GL_BGR:
+//                case GL_RGB:
+//                    components = 3; break;
+//
+//                case GL_BGRA:
+//                case GL_RGBA:
+//                    components = 4; break;
+//
+//                case GL_ALPHA:
+//                case GL_LUMINANCE:
+//                    components = 1; break;
+//            }
+            
+//            GLubyte *data = malloc(components * SCR_WIDTH * SCR_HEIGHT);
+//            double dd[1] = {1.1};
+//            double* d = dd;
+//            unsigned char kk[components * SCR_WIDTH * SCR_HEIGHT] = {'1', '2', 'b'};
+//            unsigned char* data = kk;
+//            GLubyte* data[1000] = {k};
+//            glfwSetCursorPos(window, SCR_WIDTH / 2, SCR_HEIGHT / 2);
+
+            vector< unsigned char > pixels( 1 * 1 * 4 );
+            int x = lastX;
+            int y = SCR_HEIGHT - lastY;
+            std::cout << x << ", " << y << std::endl;
+
+            if( true ) {
+                glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &pixels[0]);
+                int rr = (int)pixels[0];
+                int gg = (int)pixels[1];
+                int bb = (int)pixels[2];
+                
+                r = rr;
+                g = gg;
+                b = bb;
+
+                cout << "r: " << r << endl;
+                cout << "g: " << g << endl;
+                cout << "b: " << b << endl;
+                cout << "a: " << (int)pixels[3] << endl;
+                cout << endl;
+            }
+        }
     }
 }

@@ -60,6 +60,7 @@
 		CE2DAE0722F7D6A00037AA55 /* tiena.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = tiena.jpg; path = icehockey/icemonkey/tiena.jpg; sourceTree = SOURCE_ROOT; };
 		CE2DAE0822F7D6A00037AA55 /* Playa.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Playa.hpp; path = icehockey/icemonkey/Playa.hpp; sourceTree = SOURCE_ROOT; };
 		CE2DAE0B22F7D6A00037AA55 /* rink.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = rink.png; path = icehockey/icemonkey/rink.png; sourceTree = SOURCE_ROOT; };
+		CE621B2D230BFCBD00A5A643 /* quad.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = quad.vs; path = icehockey/shaders/quad.vs; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,8 +95,10 @@
 				CE2689CF22FD2EAA0020C532 /* rink.vs */,
 				CE2689D322FD2EAA0020C532 /* text.fs */,
 				CE2689D022FD2EAA0020C532 /* text.vs */,
+				CE621B2D230BFCBD00A5A643 /* quad.vs */,
 			);
-			path = shaders;
+			name = shaders;
+			path = icehockey/shaders;
 			sourceTree = "<group>";
 		};
 		CE2DADC422F7CEAF0037AA55 = {
