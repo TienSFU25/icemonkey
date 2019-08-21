@@ -23,6 +23,8 @@ namespace IceHockey {
     void mouse_button_callback(GLFWwindow* window, int button, int action, int mode);
     void processInput(GLFWwindow *window);
     void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    void RenderToBuffer(Shader shader, Shader textShader, float currentFrame);
+    
     int main();
     void RenderStaticText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
     void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);

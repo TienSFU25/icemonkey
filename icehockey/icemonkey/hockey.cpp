@@ -22,6 +22,9 @@ using json = nlohmann::json;
 using namespace std;
 
 namespace IceHockey {
+    unsigned int frameBuffer;
+    unsigned int defaultBuffer = 0;
+    
     // camera
     Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
     float lastX = SCR_WIDTH / 2.0f;
@@ -32,9 +35,10 @@ namespace IceHockey {
     static const int numTComponents = 2;
     float CIRCLE_RADIUS = 0.07f;
     
+    Reada rd;
+    
     float CIRC_ID = 1.0;
     float RINK_ID = 2.0;
-//    float
     
     int _r, _g, _b;
     int& r = _r;
@@ -45,9 +49,13 @@ namespace IceHockey {
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
     
-    GLuint TextVBO, TextVAO;
-    
+    // font shit
+    GLuint planeVBO, planeVAO, circleVBO, circleVAO, TextVBO, TextVAO;
+    int numPlaneVertices, numCircleVertices;
     std::map<GLchar, Character> Characters;
+    
+    // textures
+    unsigned int rinkTexture, homeTexture, awayTexture;
     
     std::vector<float> initCircleVertices() {
         int circle_points = 50;
@@ -90,7 +98,6 @@ namespace IceHockey {
     
     int main()
     {
-        Reada rd;
         rd.readTheDatFile();
         
         // glfw: initialize and configure
@@ -134,17 +141,25 @@ namespace IceHockey {
         // -----------------------------
         glEnable(GL_DEPTH_TEST);
         
+        // load textures
+        rinkTexture = Utils::loadTexture("/Users/user/Documents/361/opengl/icehockey/icehockey/icemonkey/rink.png");
+        
+        homeTexture = Utils::loadTexture("/Users/user/Documents/361/opengl/icehockey/icehockey/icemonkey/linha.jpg");
+        
+        awayTexture = Utils::loadTexture("/Users/user/Documents/361/opengl/icehockey/icehockey/icemonkey/tiena.jpg");
+        
         // build and compile our shader zprogram
         // ------------------------------------
         std::string loc =  "/Users/user/Documents/361/opengl/icehockey/icehockey/shaders/";
         std::string F1 = loc + "scene.vs";
+        std::string F2 = loc + "color.fs";
         std::string F3 = loc + "colorOrTexture.fs";
         std::string F4 = loc + "text.vs";
         std::string F5 = loc + "text.fs";
         std::string F6 = loc + "quad.vs";
         
-        Shader lightingShader(F1, F3);
-        Shader circleShader(F1, F3);
+        Shader sceneShader(F1, F3);
+        Shader colorOnlyShader(F1, F2);
         Shader textShader(F4, F5);
         Shader quadShader(F6, F3);
 
@@ -163,10 +178,9 @@ namespace IceHockey {
         };
         
         int numAttribPerVertex = 5;
-        int numPlaneVertices = (int)planeVertices.size() / numAttribPerVertex;
+        numPlaneVertices = (int)planeVertices.size() / numAttribPerVertex;
         
         // configure plane VAO (and VBO)
-        unsigned int planeVBO, planeVAO;
         glGenVertexArrays(1, &planeVAO);
         glGenBuffers(1, &planeVBO);
         
@@ -188,9 +202,6 @@ namespace IceHockey {
         glEnableVertexAttribArray(2);
         
         // circle vertex
-        unsigned int circleVBO, circleVAO;
-        int numCircleVertices;
-
         std::vector<float> circleVertices = initCircleVertices();
         numCircleVertices = (int)circleVertices.size() / 3;
         
@@ -214,13 +225,6 @@ namespace IceHockey {
         // object ID attribute
         glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(5 * sizeof(float)));
         glEnableVertexAttribArray(2);
-        
-        // load textures
-        unsigned int someTexture = Utils::loadTexture("/Users/user/Documents/361/opengl/icehockey/icehockey/icemonkey/rink.png");
-
-        unsigned int homeTexture = Utils::loadTexture("/Users/user/Documents/361/opengl/icehockey/icehockey/icemonkey/linha.jpg");
-
-        unsigned int awayTexture = Utils::loadTexture("/Users/user/Documents/361/opengl/icehockey/icehockey/icemonkey/tiena.jpg");
         
         glfwSetKeyCallback(window, IceHockey::key_callback);
         
@@ -246,14 +250,6 @@ namespace IceHockey {
         glfwSetMouseButtonCallback(window, IceHockey::mouse_button_callback);
         
         float quadVertices[] = {
-//            -0.5f,  0.5f, 0.5, 0.0f, 1.0f,
-//            -0.5f, -0.5f, 0.5, 0.0f, 0.0f,
-//            0.5f, -0.5f, 0.5, 1.0f, 0.0f,
-//
-//            -0.5f,  0.5f, 0.5, 0.0f, 1.0f,
-//            0.5f, -0.5f, 0.5, 1.0f, 0.0f,
-//            0.5f,  0.5f, 0.5, 1.0f, 1.0f
-            
             // positions   // texCoords
             -1.0f,  1.0f, 0.5, 0.0f, 1.0f,
             -1.0f, -1.0f, 0.5, 0.0f, 0.0f,
@@ -278,9 +274,8 @@ namespace IceHockey {
         
         // framebuffer configuration
         // -------------------------
-        unsigned int framebuffer;
-        glGenFramebuffers(1, &framebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        glGenFramebuffers(1, &frameBuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
         // create a color attachment texture
         unsigned int textureColorbuffer;
         glGenTextures(1, &textureColorbuffer);
@@ -322,129 +317,36 @@ namespace IceHockey {
                 rd.move(deltaTime);
 
                 // render
-                // ------
-                glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+                // first render to (invisible) "color instancing" framebuffer
+                glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
                 glEnable(GL_DEPTH_TEST);
-
+                IceHockey::RenderToBuffer(colorOnlyShader, textShader, currentFrame);
+                
+                // now render the scene
+                glBindFramebuffer(GL_FRAMEBUFFER, defaultBuffer);
+                glEnable(GL_DEPTH_TEST);
+                IceHockey::RenderToBuffer(sceneShader, textShader, currentFrame);
+                
+                // "indicator" circle
+                sceneShader.use();
+                glBindVertexArray(circleVAO);
+                glm::mat4 indicatorModel = glm::mat4(1.0f);
+                glm::vec3 trans = glm::vec3(0.5, 0.5, 0.0);
+                indicatorModel = glm::translate(indicatorModel, trans);
+                
+                sceneShader.setVec3("aColor", glm::vec3(r / 255.0, g / 255.0, b / 255.0));
+                sceneShader.setMat4("model", indicatorModel);
+                glDrawArrays(GL_TRIANGLE_FAN, 0, numCircleVertices);
+                
+                // if necessary, could dump color instance frame to viewbuffer
+//                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//                glDisable(GL_DEPTH_TEST);
 //                glClear(GL_COLOR_BUFFER_BIT);
-//                glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessery actually, since we won't be able to see behind the quad anyways)
-                
-                glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                
-                // be sure to activate shader when setting uniforms/drawing objects
-                lightingShader.use();
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, someTexture);
-                
-                // mvp
-                glm::mat4 model = glm::mat4(1.0f);
-                lightingShader.setMat4("model", model);
-                glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
-                glm::mat4 view = camera.GetViewMatrix();
-                lightingShader.setMat4("projection", projection);
-                lightingShader.setMat4("view", view);
-                
-                glBindVertexArray(planeVAO);
-                glDrawArrays(GL_TRIANGLES, 0, numPlaneVertices);
-
-                // set the text projection
-                GLfloat W = static_cast<GLfloat>(SCR_WIDTH);
-                GLfloat H = static_cast<GLfloat>(SCR_HEIGHT);
-                glm::mat4 textProjection = glm::ortho(-W / 2, W / 2, -H / 2, H / 2);
-                
-                textShader.use();
-                glm::mat4 identity;
-                textShader.setMat4("model", identity);
-                textShader.setMat4("view", identity);
-                textShader.setMat4("projection", textProjection);
-
-                std::string s = (boost::format("time: %4.5f ms") % currentFrame).str();
-                IceHockey::RenderStaticText(textShader, s, -W / 2 + 50, -H / 2 + 50, 0.5, glm::vec3(0.3, 0.7f, 0.9f));
-
-                std::map<int, Playa>::iterator it = rd.players.begin();
-
-                // draw the circles
-                circleShader.use();
-                circleShader.setMat4("projection", projection);
-                circleShader.setMat4("view", view);
-
-                while(it != rd.players.end()) {
-                    circleShader.use();
-                    glBindVertexArray(circleVAO);
-
-                    int playerId = it -> first;
-                    Playa playa = it -> second;
-                    
-                    glm::mat4 circleModel = glm::mat4(1.0f);
-                    glm::vec3 trans = playa.getTranslationMatrix();
-                    circleModel = glm::translate(circleModel, trans);
-                    
-                    if (playa.getState() == Entering) {
-                        circleShader.setVec3("aColor", Colors::LawnGreen);
-                    } else if (playa.getState() == Leaving) {
-                        circleShader.setVec3("aColor", Colors::OrangeRed);
-                    } else {
-                        if (playa.isHomeTeam) {
-                            glActiveTexture(GL_TEXTURE0);
-                            glBindTexture(GL_TEXTURE_2D, homeTexture);
-                            circleShader.setVec3("aColor", Colors::LightPurp);
-                        } else {
-                            glActiveTexture(GL_TEXTURE0);
-                            glBindTexture(GL_TEXTURE_2D, awayTexture);
-                            circleShader.setVec3("aColor", Colors::Orange);
-                        }
-                    }
-                    
-                    if (playa.isHomeTeam) {
-                        // avoid z fighting
-                        circleModel = glm::translate(circleModel, glm::vec3(0.0, 0.0, 0.1f));
-                    }
-                    
-                    circleShader.setMat4("model", circleModel);
-                    glDrawArrays(GL_TRIANGLE_FAN, 0, numCircleVertices);
-                    
-                    textShader.use();
-                    glm::mat4 textModel;
-                    glm::vec3 translateText = glm::vec3(-CIRCLE_RADIUS / 2, -CIRCLE_RADIUS / 3, 0);
-                    textModel = glm::translate(circleModel, translateText);
-                    
-                    textShader.setMat4("model", textModel);
-                    textShader.setMat4("view", view);
-                    textShader.setMat4("projection", projection);
-
-                    IceHockey::RenderText(textShader, std::to_string(playerId), 0.0, 0.0, 0.75, glm::vec3(0.0, 0.0, 0.0));
-                    it++;
-                }
-                
-//                glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-//                glClear(GL_COLOR_BUFFER_BIT);
-//                glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessery actually, since we won't be able to see behind the quad anyways)
-                
-                // render some random thing in the made up framebuffer
-//                circleShader.use();
-//                glBindVertexArray(circleVAO);
 //
-//                glm::mat4 circleModel = glm::mat4(1.0f);
-//                glm::vec3 trans = glm::vec3(0.5, 0.5, 0.1);
-//                circleModel = glm::translate(circleModel, trans);
-//
-//                circleShader.setVec3("aColor", glm::vec3(r / 255.0, g / 255.0, b / 255.0));
-//                circleShader.setMat4("model", circleModel);
-//                glDrawArrays(GL_TRIANGLE_FAN, 0, numCircleVertices);
-                
-                // now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
-                glBindFramebuffer(GL_FRAMEBUFFER, 0);
-                glDisable(GL_DEPTH_TEST);
-                
-                // clear all relevant buffers
-                glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessery actually, since we won't be able to see behind the quad anyways)
-                glClear(GL_COLOR_BUFFER_BIT);
-                
-                quadShader.use();
-                glBindVertexArray(quadVAO);
-                glBindTexture(GL_TEXTURE_2D, textureColorbuffer);    // use the color attachment texture as the texture of the quad plane
-                glDrawArrays(GL_TRIANGLES, 0, 6);
+//                quadShader.use();
+//                glBindVertexArray(quadVAO);
+//                glBindTexture(GL_TEXTURE_2D, textureColorbuffer);    // use the color attachment texture as the texture of the quad plane
+//                glDrawArrays(GL_TRIANGLES, 0, 6);
             }
             
             // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -470,6 +372,93 @@ namespace IceHockey {
         // ------------------------------------------------------------------
         glfwTerminate();
         return 0;
+    }
+    
+    void RenderToBuffer(Shader shader, Shader textShader, float currentFrame)
+    {
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        // draw the texturized rink
+        shader.use();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, rinkTexture);
+        
+        // mvp
+        glm::mat4 model = glm::mat4(1.0f);
+        shader.setMat4("model", model);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
+        glm::mat4 view = camera.GetViewMatrix();
+        shader.setMat4("projection", projection);
+        shader.setMat4("view", view);
+        
+        glBindVertexArray(planeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, numPlaneVertices);
+        
+        // set the text projection
+        GLfloat W = static_cast<GLfloat>(SCR_WIDTH);
+        GLfloat H = static_cast<GLfloat>(SCR_HEIGHT);
+        glm::mat4 textProjection = glm::ortho(-W / 2, W / 2, -H / 2, H / 2);
+        
+        textShader.use();
+        glm::mat4 identity;
+        textShader.setMat4("model", identity);
+        textShader.setMat4("view", identity);
+        textShader.setMat4("projection", textProjection);
+        
+        std::string s = (boost::format("time: %4.5f ms") % currentFrame).str();
+        IceHockey::RenderStaticText(textShader, s, -W / 2 + 50, -H / 2 + 50, 0.5, glm::vec3(0.3, 0.7f, 0.9f));
+        
+        std::map<int, Playa>::iterator it = rd.players.begin();
+        
+        // draw the circles
+        while(it != rd.players.end()) {
+            shader.use();
+            glBindVertexArray(circleVAO);
+            
+            int playerId = it -> first;
+            Playa playa = it -> second;
+            
+            glm::mat4 circleModel = glm::mat4(1.0f);
+            glm::vec3 trans = playa.getTranslationMatrix();
+            circleModel = glm::translate(circleModel, trans);
+            
+            if (playa.getState() == Entering) {
+                shader.setVec3("aColor", Colors::LawnGreen);
+            } else if (playa.getState() == Leaving) {
+                shader.setVec3("aColor", Colors::OrangeRed);
+            } else {
+                if (playa.isHomeTeam) {
+                    glActiveTexture(GL_TEXTURE0);
+                    glBindTexture(GL_TEXTURE_2D, homeTexture);
+                    shader.setVec3("aColor", Colors::LightPurp);
+                } else {
+                    glActiveTexture(GL_TEXTURE0);
+                    glBindTexture(GL_TEXTURE_2D, awayTexture);
+                    shader.setVec3("aColor", Colors::Orange);
+                }
+            }
+            
+            if (playa.isHomeTeam) {
+                // avoid z fighting
+                circleModel = glm::translate(circleModel, glm::vec3(0.0, 0.0, 0.1f));
+            }
+            
+            shader.setMat4("model", circleModel);
+            glDrawArrays(GL_TRIANGLE_FAN, 0, numCircleVertices);
+            
+            textShader.use();
+            glm::mat4 textModel;
+            glm::vec3 translateText = glm::vec3(-CIRCLE_RADIUS / 2, -CIRCLE_RADIUS / 3, 0);
+            textModel = glm::translate(circleModel, translateText);
+            
+            textShader.setMat4("model", textModel);
+            textShader.setMat4("view", view);
+            textShader.setMat4("projection", projection);
+            
+            IceHockey::RenderText(textShader, std::to_string(playerId), 0.0, 0.0, 0.75, glm::vec3(0.0, 0.0, 0.0));
+            it++;
+        }
     }
     
     void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
@@ -621,55 +610,27 @@ namespace IceHockey {
     }
     
     void mouse_button_callback(GLFWwindow* window, int button, int action, int mode) {
-        std::cout << "left mouse click!" << std::endl;
-
-        GLenum format = GL_RGBA;
-        const int components = 4;
-
+//        std::cout << "left mouse click!" << std::endl;
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+        
         if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-//            switch(format) {
-//                case GL_BGR:
-//                case GL_RGB:
-//                    components = 3; break;
-//
-//                case GL_BGRA:
-//                case GL_RGBA:
-//                    components = 4; break;
-//
-//                case GL_ALPHA:
-//                case GL_LUMINANCE:
-//                    components = 1; break;
-//            }
-            
-//            GLubyte *data = malloc(components * SCR_WIDTH * SCR_HEIGHT);
-//            double dd[1] = {1.1};
-//            double* d = dd;
-//            unsigned char kk[components * SCR_WIDTH * SCR_HEIGHT] = {'1', '2', 'b'};
-//            unsigned char* data = kk;
-//            GLubyte* data[1000] = {k};
-//            glfwSetCursorPos(window, SCR_WIDTH / 2, SCR_HEIGHT / 2);
-
             vector< unsigned char > pixels( 1 * 1 * 4 );
             int x = lastX;
             int y = SCR_HEIGHT - lastY;
-            std::cout << x << ", " << y << std::endl;
+//            std::cout << x << ", " << y << std::endl;
 
-            if( true ) {
-                glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &pixels[0]);
-                int rr = (int)pixels[0];
-                int gg = (int)pixels[1];
-                int bb = (int)pixels[2];
-                
-                r = rr;
-                g = gg;
-                b = bb;
+            glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &pixels[0]);
+            r = (int)pixels[0];
+            g = (int)pixels[1];
+            b = (int)pixels[2];
 
-                cout << "r: " << r << endl;
-                cout << "g: " << g << endl;
-                cout << "b: " << b << endl;
-                cout << "a: " << (int)pixels[3] << endl;
-                cout << endl;
-            }
+            cout << "r: " << r << endl;
+            cout << "g: " << g << endl;
+            cout << "b: " << b << endl;
+            cout << "a: " << (int)pixels[3] << endl;
+            cout << endl;
         }
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, defaultBuffer);
     }
 }
