@@ -17,7 +17,6 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
-#include <glm/glm.hpp>
 #include <vector>
 #include <string>
 #include "Constants.h"
@@ -39,13 +38,6 @@ struct Pair {
     std::string S;
 };
 
-namespace Colors {
-    const glm::vec3 LightPurp = glm::vec3(138.0 / 255.0, 43.0 / 255.0, 226.0 / 255.0);
-    const glm::vec3 Orange = glm::vec3(255.0 / 255.0, 140.0 / 255.0, 0.0 / 255.0);
-    const glm::vec3 LawnGreen = glm::vec3(124 / 255.0, 252 / 255.0, 0);
-    const glm::vec3 OrangeRed = glm::vec3(1.0, 69.0 / 255.0, 0);
-}
-
 /// Holds all state information relevant to a character as loaded using FreeType
 struct Character {
     GLuint TextureID;   // ID handle of the glyph texture
@@ -65,4 +57,6 @@ namespace Utils {
     float ndcToTexCoord(float f);
     
     std::vector<float> genCubeVertices(float bottomX, float bottomY, float bottomZ, float w, float h, float d, float objectId);
+    
+    std::vector<float> addColors(std::vector<float> src, glm::vec3 color, int step = 6);
 }

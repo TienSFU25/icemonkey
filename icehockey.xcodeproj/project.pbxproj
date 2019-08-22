@@ -158,7 +158,8 @@
 				CE2DADE622F7D1C60037AA55 /* stb_image.h */,
 				CE252AD923055CFD002DA851 /* Constants.h */,
 			);
-			path = shared;
+			name = shared;
+			path = icehockey/shared;
 			sourceTree = "<group>";
 		};
 		CE2DADFC22F7D6830037AA55 /* icemonkey */ = {

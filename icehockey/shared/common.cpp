@@ -235,4 +235,21 @@ namespace Utils {
         
         return cubeVertices;
     }
+    
+    std::vector<float> addColors(std::vector<float> src, glm::vec3 color, int step) {
+        std::vector<float> withColors;
+        
+        for (unsigned int i = 0; i < src.size(); i+= step) {
+            for (int j = 0; j < step; j++) {
+                float f = src[i+j];
+                withColors.push_back(f);
+            }
+
+            withColors.push_back(color.r);
+            withColors.push_back(color.g);
+            withColors.push_back(color.b);
+        }
+        
+        return withColors;
+    }
 }

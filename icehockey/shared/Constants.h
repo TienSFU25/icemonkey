@@ -9,8 +9,7 @@
 #ifndef Constants_h
 #define Constants_h
 
-
-#endif /* Constants_h */
+#include <glm/glm.hpp>
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -22,3 +21,25 @@ const float Sim_Speed = 1.0;
 // rink sizing
 const float Rink_Width_Max = 100;
 const float Rink_Height_Max = 42.5;
+
+enum SelectedObject {
+    Circle,
+    Rink,
+    Slider,
+    None
+};
+
+namespace Colors {
+    const glm::vec3 Red = glm::vec3(1, 0, 0);
+    const glm::vec3 Green = glm::vec3(0, 1, 0);
+    const glm::vec3 Blue = glm::vec3(0, 0, 1);
+    const glm::vec3 Black = glm::vec3(0, 0, 0);
+    
+    const glm::vec3 LightPurp = glm::vec3(138.0 / 255.0, 43.0 / 255.0, 226.0 / 255.0);
+    const glm::vec3 Orange = glm::vec3(255.0 / 255.0, 140.0 / 255.0, 0.0 / 255.0);
+    const glm::vec3 LawnGreen = glm::vec3(124 / 255.0, 252 / 255.0, 0);
+    const glm::vec3 OrangeRed = glm::vec3(1.0, 69.0 / 255.0, 0);
+    const glm::vec3 Pink = glm::vec3(255.0 / 255.0, 192 / 255.0, 203 / 255.0);
+}
+
+#endif /* Constants_h */

@@ -172,6 +172,12 @@ namespace IceHockey {
         };
         
         std::vector<float> sliderVertices = Utils::genCubeVertices(-0.5f, 0.4f, 0.4f, 1.0, 0.1, 0.1, SLIDER_ID);
+        std::vector<float> circleVertices = initCircleVertices();
+
+        planeVertices = Utils::addColors(planeVertices, objectColors[Rink]);
+        sliderVertices = Utils::addColors(sliderVertices, objectColors[Slider]);
+        circleVertices = Utils::addColors(circleVertices, objectColors[Circle]);
+        
         // ------------------------------------------------------------------
 //        std::vector<float> sliderVertices = {
 //            // positions          // texture Coords
@@ -218,7 +224,7 @@ namespace IceHockey {
 //            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID
 //        };
 //
-        int numAttribPerVertex = 5;
+        int numAttribPerVertex = 9;
         numPlaneVertices = (int)planeVertices.size() / numAttribPerVertex;
         
         // configure plane VAO (and VBO)
@@ -232,7 +238,6 @@ namespace IceHockey {
         IceHockey::setupBoringVAO();
 
         // circle uses different vertices and VAO
-        std::vector<float> circleVertices = initCircleVertices();
         numCircleVertices = (int)circleVertices.size() / 3;
         
         glGenBuffers(1, &circleVBO);
@@ -426,7 +431,7 @@ namespace IceHockey {
         // draw the slider
         glBindVertexArray(sliderVAO);
 //        shader.setVec3("aColor", Colors::Orange);
-        shader.setVec3("aColor", glm::vec3(r / 255.0, g / 255.0, b / 255.0));
+        shader.setVec3("aColor", currentColor);
         glDrawArrays(GL_TRIANGLES, 0, numCubeVertices);
         
         // set the text projection
@@ -645,15 +650,19 @@ namespace IceHockey {
     
     void setupBoringVAO() {
         // position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         
         // texture attribute
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
         
         // object ID attribute
-        glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(5 * sizeof(float)));
+        glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(5 * sizeof(float)));
         glEnableVertexAttribArray(2);
+
+        // color attribute
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float)));
+        glEnableVertexAttribArray(3);
     }
 }
