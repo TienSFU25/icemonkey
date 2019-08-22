@@ -14,6 +14,8 @@
 #include "Camera.h"
 #include "Playa.hpp"
 #include "Reada.h"
+#include "globalVariables.hpp"
+#include "eventHandlers.hpp"
 
 #include <iostream>
 
@@ -22,13 +24,8 @@ using json = nlohmann::json;
 using namespace std;
 
 namespace IceHockey {
-    unsigned int frameBuffer;
-    unsigned int defaultBuffer = 0;
-    
     // camera
     Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-    float lastX = SCR_WIDTH / 2.0f;
-    float lastY = SCR_HEIGHT / 2.0f;
     bool firstMouse = true;
     bool loop = false;
     static const int numVComponents = 3;
@@ -39,19 +36,16 @@ namespace IceHockey {
     
     float CIRC_ID = 1.0;
     float RINK_ID = 2.0;
-    
-    int _r, _g, _b;
-    int& r = _r;
-    int& b = _b;
-    int& g = _g;
+    float SLIDER_ID = 3.0;
     
     // timing
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
     
     // font shit
-    GLuint planeVBO, planeVAO, circleVBO, circleVAO, TextVBO, TextVAO;
+    GLuint planeVBO, planeVAO, circleVBO, circleVAO, TextVBO, TextVAO, sliderVBO, sliderVAO;
     int numPlaneVertices, numCircleVertices;
+    int numCubeVertices = 24;
     std::map<GLchar, Character> Characters;
     
     // textures
@@ -177,55 +171,89 @@ namespace IceHockey {
             -normalizedRinkWidth, -normalizedRinkHeight,  0.0f,  0.0f, 0.0f, RINK_ID // bottom-left
         };
         
+        std::vector<float> sliderVertices = Utils::genCubeVertices(-0.5f, 0.4f, 0.4f, 1.0, 0.1, 0.1, SLIDER_ID);
+        // ------------------------------------------------------------------
+//        std::vector<float> sliderVertices = {
+//            // positions          // texture Coords
+//            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, SLIDER_ID,
+//            0.5f, -0.5f, -0.5f,  1.0f, 0.0f, SLIDER_ID,
+//            0.5f,  0.5f, -0.5f,  1.0f, 1.0f, SLIDER_ID,
+//            0.5f,  0.5f, -0.5f,  1.0f, 1.0f, SLIDER_ID,
+//            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID,
+//            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, SLIDER_ID,
+//
+//            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, SLIDER_ID,
+//            0.5f, -0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
+//            0.5f,  0.5f,  0.5f,  1.0f, 1.0f, SLIDER_ID,
+//            0.5f,  0.5f,  0.5f,  1.0f, 1.0f, SLIDER_ID,
+//            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, SLIDER_ID,
+//            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, SLIDER_ID,
+//
+//            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
+//            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, SLIDER_ID,
+//            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID,
+//            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID,
+//            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, SLIDER_ID,
+//            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
+//
+//            0.5f,  0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
+//            0.5f,  0.5f, -0.5f,  1.0f, 1.0f, SLIDER_ID,
+//            0.5f, -0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID,
+//            0.5f, -0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID,
+//            0.5f, -0.5f,  0.5f,  0.0f, 0.0f, SLIDER_ID,
+//            0.5f,  0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
+//
+//            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID,
+//            0.5f, -0.5f, -0.5f,  1.0f, 1.0f, SLIDER_ID,
+//            0.5f, -0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
+//            0.5f, -0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
+//            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, SLIDER_ID,
+//            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID,
+//
+//            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID,
+//            0.5f,  0.5f, -0.5f,  1.0f, 1.0f, SLIDER_ID,
+//            0.5f,  0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
+//            0.5f,  0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
+//            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, SLIDER_ID,
+//            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID
+//        };
+//
         int numAttribPerVertex = 5;
         numPlaneVertices = (int)planeVertices.size() / numAttribPerVertex;
         
         // configure plane VAO (and VBO)
-        glGenVertexArrays(1, &planeVAO);
         glGenBuffers(1, &planeVBO);
         
         glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
         glBufferData(GL_ARRAY_BUFFER, planeVertices.size() * sizeof(float), &planeVertices[0], GL_STATIC_DRAW);
         
+        glGenVertexArrays(1, &planeVAO);
         glBindVertexArray(planeVAO);
-        
-        // position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-        
-        // texture attribute
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-        glEnableVertexAttribArray(1);
+        IceHockey::setupBoringVAO();
 
-        // object ID attribute
-        glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(5 * sizeof(float)));
-        glEnableVertexAttribArray(2);
-        
-        // circle vertex
+        // circle uses different vertices and VAO
         std::vector<float> circleVertices = initCircleVertices();
         numCircleVertices = (int)circleVertices.size() / 3;
         
-        // circle uses different vertices and VAO
         glGenBuffers(1, &circleVBO);
-        glGenVertexArrays(1, &circleVAO);
 
         glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
         glBufferData(GL_ARRAY_BUFFER, circleVertices.size() * sizeof(float), &circleVertices[0], GL_STATIC_DRAW);
 
+        glGenVertexArrays(1, &circleVAO);
         glBindVertexArray(circleVAO);
+        IceHockey::setupBoringVAO();
+        
+        // slider VAO/VBO
+        glGenBuffers(1, &sliderVBO);
+        
+        glBindBuffer(GL_ARRAY_BUFFER, sliderVBO);
+        glBufferData(GL_ARRAY_BUFFER, sliderVertices.size() * sizeof(float), &sliderVertices[0], GL_STATIC_DRAW);
+        
+        glGenVertexArrays(1, &sliderVAO);
+        glBindVertexArray(sliderVAO);
+        IceHockey::setupBoringVAO();
 
-        // position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-        
-        // texture attribute
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-        
-        // object ID attribute
-        glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(5 * sizeof(float)));
-        glEnableVertexAttribArray(2);
-        
         glfwSetKeyCallback(window, IceHockey::key_callback);
         
         // font shit
@@ -247,7 +275,7 @@ namespace IceHockey {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
         
-        glfwSetMouseButtonCallback(window, IceHockey::mouse_button_callback);
+        glfwSetMouseButtonCallback(window, EventHandler::handleMouseClick);
         
         float quadVertices[] = {
             // positions   // texCoords
@@ -379,12 +407,8 @@ namespace IceHockey {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        // draw the texturized rink
+        // mvp setup
         shader.use();
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, rinkTexture);
-        
-        // mvp
         glm::mat4 model = glm::mat4(1.0f);
         shader.setMat4("model", model);
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
@@ -392,8 +416,18 @@ namespace IceHockey {
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
         
+        // draw the texturized rink
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, rinkTexture);
+        
         glBindVertexArray(planeVAO);
         glDrawArrays(GL_TRIANGLES, 0, numPlaneVertices);
+        
+        // draw the slider
+        glBindVertexArray(sliderVAO);
+//        shader.setVec3("aColor", Colors::Orange);
+        shader.setVec3("aColor", glm::vec3(r / 255.0, g / 255.0, b / 255.0));
+        glDrawArrays(GL_TRIANGLES, 0, numCubeVertices);
         
         // set the text projection
         GLfloat W = static_cast<GLfloat>(SCR_WIDTH);
@@ -609,28 +643,17 @@ namespace IceHockey {
         camera.ProcessMouseScroll(yoffset);
     }
     
-    void mouse_button_callback(GLFWwindow* window, int button, int action, int mode) {
-//        std::cout << "left mouse click!" << std::endl;
-        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+    void setupBoringVAO() {
+        // position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
         
-        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-            vector< unsigned char > pixels( 1 * 1 * 4 );
-            int x = lastX;
-            int y = SCR_HEIGHT - lastY;
-//            std::cout << x << ", " << y << std::endl;
-
-            glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &pixels[0]);
-            r = (int)pixels[0];
-            g = (int)pixels[1];
-            b = (int)pixels[2];
-
-            cout << "r: " << r << endl;
-            cout << "g: " << g << endl;
-            cout << "b: " << b << endl;
-            cout << "a: " << (int)pixels[3] << endl;
-            cout << endl;
-        }
+        // texture attribute
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
         
-        glBindFramebuffer(GL_FRAMEBUFFER, defaultBuffer);
+        // object ID attribute
+        glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(5 * sizeof(float)));
+        glEnableVertexAttribArray(2);
     }
 }

@@ -185,4 +185,54 @@ namespace Utils {
     float ndcToTexCoord(float f) {
         return (f + 1) / 2;
     }
+    
+    std::vector<float> genCubeVertices(float bottomX, float bottomY, float bottomZ, float w, float h, float d, float objectId)
+    {        
+        std::vector<float> cubeVertices = {
+            // positions          // texture Coords
+            bottomX, bottomY, bottomZ,  0.0f, 0.0f, objectId,
+            bottomX + w, bottomY, bottomZ,  1.0f, 0.0f, objectId,
+            bottomX + w, bottomY + h, bottomZ,  1.0f, 1.0f, objectId,
+            bottomX + w, bottomY + h, bottomZ,  1.0f, 1.0f, objectId,
+            bottomX, bottomY + h, bottomZ,  0.0f, 1.0f, objectId,
+            bottomX, bottomY, bottomZ, 0.0f, 0.0f, objectId,
+
+            bottomX, bottomY, bottomZ + d, 0.0f, 0.0f, objectId,
+            bottomX + w, bottomY, bottomZ + d, 1.0f, 0.0f, objectId,
+            bottomX + w, bottomY + h, bottomZ + d, 1.0f, 1.0f, objectId,
+            bottomX + w, bottomY + h, bottomZ + d, 1.0f, 1.0f, objectId,
+            bottomX, bottomY + h, bottomZ + d, 0.0f, 1.0f, objectId,
+            bottomX, bottomY, bottomZ + d, 0.0f, 0.0f, objectId,
+            
+            bottomX, bottomY + h, bottomZ + d, 1.0f, 0.0f, objectId,
+            bottomX, bottomY + h, bottomZ, 1.0f, 1.0f, objectId,
+            bottomX, bottomY, bottomZ, 0.0f, 1.0f, objectId,
+            bottomX, bottomY, bottomZ, 0.0f, 1.0f, objectId,
+            bottomX, bottomY, bottomZ + d, 0.0f, 0.0f, objectId,
+            bottomX, bottomY + h, bottomZ + d, 1.0f, 0.0f, objectId,
+            
+            bottomX + w, bottomY + h, bottomZ + d,  1.0f, 0.0f, objectId,
+            bottomX + w, bottomY + h, bottomZ,  1.0f, 1.0f, objectId,
+            bottomX + w, bottomY, bottomZ, 0.0f, 1.0f, objectId,
+            bottomX + w, bottomY, bottomZ, 0.0f, 1.0f, objectId,            
+            bottomX + w, bottomY, bottomZ + d, 0.0f, 0.0f, objectId,
+            bottomX + w, bottomY + h, bottomZ + d,  1.0f, 0.0f, objectId,
+            
+            bottomX, bottomY, bottomZ + d, 0.0f, 1.0f, objectId,
+            bottomX + w, bottomY, bottomZ, 1.0f, 1.0f, objectId,
+            bottomX + w, bottomY, bottomZ + d, 1.0f, 0.0f, objectId,
+            bottomX + w, bottomY, bottomZ + d, 1.0f, 0.0f, objectId,
+            bottomX, bottomY, bottomZ + d, 0.0f, 0.0f, objectId,
+            bottomX, bottomY, bottomZ + d, 0.0f, 1.0f, objectId,
+            
+            bottomX, bottomY + h, bottomZ, 0.0f, 1.0f, objectId,
+            bottomX + w, bottomY + h, bottomZ, 1.0f, 1.0f, objectId,
+            bottomX + w, bottomY + h, bottomZ + d, 1.0f, 0.0f, objectId,
+            bottomX + w, bottomY + h, bottomZ + d, 1.0f, 0.0f, objectId,
+            bottomX, bottomY + h, bottomZ + d,  0.0f, 0.0f, objectId,
+            bottomX, bottomY + h, bottomZ, 0.0f, 1.0f, objectId,
+        };
+        
+        return cubeVertices;
+    }
 }

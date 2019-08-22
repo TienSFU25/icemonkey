@@ -63,4 +63,6 @@ namespace Utils {
     float stringToFloat(std::string s);
     int stringToInt(std::string s);
     float ndcToTexCoord(float f);
+    
+    std::vector<float> genCubeVertices(float bottomX, float bottomY, float bottomZ, float w, float h, float d, float objectId);
 }

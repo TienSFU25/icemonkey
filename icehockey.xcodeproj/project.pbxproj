@@ -12,6 +12,8 @@
 		CE2689D622FD33B10020C532 /* hockey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE2DAE0422F7D6A00037AA55 /* hockey.cpp */; };
 		CE2DADD122F7CEAF0037AA55 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE2DADD022F7CEAF0037AA55 /* main.cpp */; };
 		CE2DADDE22F7D1010037AA55 /* libglfw.3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2DADDC22F7D1010037AA55 /* libglfw.3.3.dylib */; };
+		CE621B32230E34B100A5A643 /* eventHandlers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE621B31230E34B100A5A643 /* eventHandlers.cpp */; };
+		CE621B34230E3A5C00A5A643 /* globalVariables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE621B33230E3A5C00A5A643 /* globalVariables.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -61,6 +63,10 @@
 		CE2DAE0B22F7D6A00037AA55 /* rink.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = rink.png; path = icehockey/icemonkey/rink.png; sourceTree = SOURCE_ROOT; };
 		CE621B2D230BFCBD00A5A643 /* quad.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = quad.vs; path = icehockey/shaders/quad.vs; sourceTree = SOURCE_ROOT; };
 		CE621B2E230CE39200A5A643 /* color.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = color.fs; sourceTree = "<group>"; };
+		CE621B2F230E30F000A5A643 /* eventHandlers.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = eventHandlers.hpp; sourceTree = "<group>"; };
+		CE621B30230E324300A5A643 /* globalVariables.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = globalVariables.hpp; sourceTree = "<group>"; };
+		CE621B31230E34B100A5A643 /* eventHandlers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = eventHandlers.cpp; sourceTree = "<group>"; };
+		CE621B33230E3A5C00A5A643 /* globalVariables.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = globalVariables.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -168,6 +174,10 @@
 				CE2DAE0522F7D6A00037AA55 /* Reada.h */,
 				CE2DAE0B22F7D6A00037AA55 /* rink.png */,
 				CE2DAE0722F7D6A00037AA55 /* tiena.jpg */,
+				CE621B2F230E30F000A5A643 /* eventHandlers.hpp */,
+				CE621B31230E34B100A5A643 /* eventHandlers.cpp */,
+				CE621B30230E324300A5A643 /* globalVariables.hpp */,
+				CE621B33230E3A5C00A5A643 /* globalVariables.cpp */,
 			);
 			name = icemonkey;
 			path = /Users/user/Documents/361/opengl/icehockey/icehockey/icemonkey;
@@ -229,9 +239,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE621B32230E34B100A5A643 /* eventHandlers.cpp in Sources */,
 				CE252ADB23055FDE002DA851 /* common.cpp in Sources */,
 				CE2689D622FD33B10020C532 /* hockey.cpp in Sources */,
 				CE2DADD122F7CEAF0037AA55 /* main.cpp in Sources */,
+				CE621B34230E3A5C00A5A643 /* globalVariables.cpp in Sources */,
 				CE2689D522FD31440020C532 /* glad.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
