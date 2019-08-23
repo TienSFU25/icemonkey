@@ -252,4 +252,27 @@ namespace Utils {
         
         return withColors;
     }
+    
+    // dangit :|
+    glm::vec4 screenToWorldSpace(glm::vec2 point, glm::mat4 model, glm::mat4 view, glm::mat4 projection) {
+        glm::vec4 v;
+        v.x = point.x / SCR_WIDTH;
+        v.y = point.y / SCR_HEIGHT;
+        v.z = SliderPosition.z;
+        v.w = 1.0;
+        
+        // to clip space
+        v.x = (v.x - 0.5) * 2;
+        v.y = (v.y - 0.5) * 2;
+        
+        // world space
+//        v = glm::inverse(model) * glm::inverse(view) * glm::inverse(projection) * v;
+        glm::mat4 inv = glm::inverse(projection * view * model);
+        v = v * inv;
+//        v.x /= v.w;
+//        v.y /= v.w;
+//        v.z /= v.w;
+        
+        return v;
+    }
 }

@@ -31,19 +31,21 @@ namespace IceHockey {
     static const int numVComponents = 3;
     static const int numTComponents = 2;
     float CIRCLE_RADIUS = 0.07f;
+    int numAttribPerVertex = 9;
     
     Reada rd;
     
     float CIRC_ID = 1.0;
     float RINK_ID = 2.0;
     float SLIDER_ID = 3.0;
+    float SLIDER_HANDLE_ID = 4.0;
     
     // timing
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
     
     // font shit
-    GLuint planeVBO, planeVAO, circleVBO, circleVAO, TextVBO, TextVAO, sliderVBO, sliderVAO;
+    GLuint planeVBO, planeVAO, circleVBO, circleVAO, TextVBO, TextVAO, sliderVBO, sliderVAO, sliderHandleVAO, sliderHandleVBO;
     int numPlaneVertices, numCircleVertices;
     int numCubeVertices = 24;
     std::map<GLchar, Character> Characters;
@@ -58,12 +60,12 @@ namespace IceHockey {
         std::vector<float> circleVertices = {};
         
         // add the first point
-        circleVertices.push_back(CIRCLE_RADIUS * cos(0));
-        circleVertices.push_back(CIRCLE_RADIUS * sin(0));
-        circleVertices.push_back(0.1f);
-        circleVertices.push_back(Utils::ndcToTexCoord(cos(0)));
-        circleVertices.push_back(Utils::ndcToTexCoord(sin(0)));
-        circleVertices.push_back(CIRC_ID);
+//        circleVertices.push_back(CIRCLE_RADIUS * cos(0));
+//        circleVertices.push_back(CIRCLE_RADIUS * sin(0));
+//        circleVertices.push_back(0.1f);
+//        circleVertices.push_back(Utils::ndcToTexCoord(cos(0)));
+//        circleVertices.push_back(Utils::ndcToTexCoord(sin(0)));
+//        circleVertices.push_back(CIRC_ID);
         
         for (int i = 0; i < circle_points; i++)
         {
@@ -80,12 +82,12 @@ namespace IceHockey {
         }
         
         // add the first point again, to complete circle
-        circleVertices.push_back(CIRCLE_RADIUS * cos(0));
-        circleVertices.push_back(CIRCLE_RADIUS * sin(0));
-        circleVertices.push_back(0.1f);
-        circleVertices.push_back(Utils::ndcToTexCoord(cos(0)));
-        circleVertices.push_back(Utils::ndcToTexCoord(sin(0)));
-        circleVertices.push_back(CIRC_ID);
+//        circleVertices.push_back(CIRCLE_RADIUS * cos(0));
+//        circleVertices.push_back(CIRCLE_RADIUS * sin(0));
+//        circleVertices.push_back(0.1f);
+//        circleVertices.push_back(Utils::ndcToTexCoord(cos(0)));
+//        circleVertices.push_back(Utils::ndcToTexCoord(sin(0)));
+//        circleVertices.push_back(CIRC_ID);
 
         return circleVertices;
     }
@@ -171,60 +173,16 @@ namespace IceHockey {
             -normalizedRinkWidth, -normalizedRinkHeight,  0.0f,  0.0f, 0.0f, RINK_ID // bottom-left
         };
         
-        std::vector<float> sliderVertices = Utils::genCubeVertices(-0.5f, 0.4f, 0.4f, 1.0, 0.1, 0.1, SLIDER_ID);
+        std::vector<float> sliderVertices = Utils::genCubeVertices(-0.5f, 0.1f, 0.1f, SLIDER_LENGTH, 0.1, 0.1, SLIDER_ID);
+        std::vector<float> sliderHandleVertices = Utils::genCubeVertices(-0.1f, 0.05f, 0.05f, 0.2, 0.2, 0.2, SLIDER_HANDLE_ID);
+        
         std::vector<float> circleVertices = initCircleVertices();
 
         planeVertices = Utils::addColors(planeVertices, objectColors[Rink]);
         sliderVertices = Utils::addColors(sliderVertices, objectColors[Slider]);
+        sliderHandleVertices = Utils::addColors(sliderHandleVertices, objectColors[SliderHandle]);
         circleVertices = Utils::addColors(circleVertices, objectColors[Circle]);
-        
-        // ------------------------------------------------------------------
-//        std::vector<float> sliderVertices = {
-//            // positions          // texture Coords
-//            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, SLIDER_ID,
-//            0.5f, -0.5f, -0.5f,  1.0f, 0.0f, SLIDER_ID,
-//            0.5f,  0.5f, -0.5f,  1.0f, 1.0f, SLIDER_ID,
-//            0.5f,  0.5f, -0.5f,  1.0f, 1.0f, SLIDER_ID,
-//            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID,
-//            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, SLIDER_ID,
-//
-//            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, SLIDER_ID,
-//            0.5f, -0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
-//            0.5f,  0.5f,  0.5f,  1.0f, 1.0f, SLIDER_ID,
-//            0.5f,  0.5f,  0.5f,  1.0f, 1.0f, SLIDER_ID,
-//            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, SLIDER_ID,
-//            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, SLIDER_ID,
-//
-//            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
-//            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, SLIDER_ID,
-//            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID,
-//            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID,
-//            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, SLIDER_ID,
-//            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
-//
-//            0.5f,  0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
-//            0.5f,  0.5f, -0.5f,  1.0f, 1.0f, SLIDER_ID,
-//            0.5f, -0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID,
-//            0.5f, -0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID,
-//            0.5f, -0.5f,  0.5f,  0.0f, 0.0f, SLIDER_ID,
-//            0.5f,  0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
-//
-//            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID,
-//            0.5f, -0.5f, -0.5f,  1.0f, 1.0f, SLIDER_ID,
-//            0.5f, -0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
-//            0.5f, -0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
-//            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, SLIDER_ID,
-//            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID,
-//
-//            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID,
-//            0.5f,  0.5f, -0.5f,  1.0f, 1.0f, SLIDER_ID,
-//            0.5f,  0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
-//            0.5f,  0.5f,  0.5f,  1.0f, 0.0f, SLIDER_ID,
-//            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, SLIDER_ID,
-//            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, SLIDER_ID
-//        };
-//
-        int numAttribPerVertex = 9;
+
         numPlaneVertices = (int)planeVertices.size() / numAttribPerVertex;
         
         // configure plane VAO (and VBO)
@@ -249,7 +207,7 @@ namespace IceHockey {
         glBindVertexArray(circleVAO);
         IceHockey::setupBoringVAO();
         
-        // slider VAO/VBO
+        // slider
         glGenBuffers(1, &sliderVBO);
         
         glBindBuffer(GL_ARRAY_BUFFER, sliderVBO);
@@ -259,6 +217,16 @@ namespace IceHockey {
         glBindVertexArray(sliderVAO);
         IceHockey::setupBoringVAO();
 
+        // slider handle
+        glGenBuffers(1, &sliderHandleVBO);
+        
+        glBindBuffer(GL_ARRAY_BUFFER, sliderHandleVBO);
+        glBufferData(GL_ARRAY_BUFFER, sliderHandleVertices.size() * sizeof(float), &sliderHandleVertices[0], GL_STATIC_DRAW);
+        
+        glGenVertexArrays(1, &sliderHandleVAO);
+        glBindVertexArray(sliderHandleVAO);
+        IceHockey::setupBoringVAO();
+        
         glfwSetKeyCallback(window, IceHockey::key_callback);
         
         // font shit
@@ -361,15 +329,15 @@ namespace IceHockey {
                 IceHockey::RenderToBuffer(sceneShader, textShader, currentFrame);
                 
                 // "indicator" circle
-                sceneShader.use();
-                glBindVertexArray(circleVAO);
-                glm::mat4 indicatorModel = glm::mat4(1.0f);
-                glm::vec3 trans = glm::vec3(0.5, 0.5, 0.0);
-                indicatorModel = glm::translate(indicatorModel, trans);
-                
-                sceneShader.setVec3("aColor", glm::vec3(r / 255.0, g / 255.0, b / 255.0));
-                sceneShader.setMat4("model", indicatorModel);
-                glDrawArrays(GL_TRIANGLE_FAN, 0, numCircleVertices);
+//                sceneShader.use();
+//                glBindVertexArray(circleVAO);
+//                glm::mat4 indicatorModel = glm::mat4(1.0f);
+//                glm::vec3 trans = glm::vec3(0.5, 0.5, 0.0);
+//                indicatorModel = glm::translate(indicatorModel, trans);
+//
+//                sceneShader.setVec3("aColor", glm::vec3(r / 255.0, g / 255.0, b / 255.0));
+//                sceneShader.setMat4("model", indicatorModel);
+//                glDrawArrays(GL_TRIANGLE_FAN, 0, numCircleVertices);
                 
                 // if necessary, could dump color instance frame to viewbuffer
 //                glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -416,11 +384,24 @@ namespace IceHockey {
         shader.use();
         glm::mat4 model = glm::mat4(1.0f);
         shader.setMat4("model", model);
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
-        glm::mat4 view = camera.GetViewMatrix();
+        projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
+        view = camera.GetViewMatrix();
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
         
+        glm::vec4 randomPoint = glm::vec4(0.1, 0.1, 0.1, 1.0);
+        glm::vec4 _inProjSpace = randomPoint * model * view * projection;
+        glm::vec4 _k = projection * view * model * randomPoint;
+        glm::vec4 k = glm::vec4(_k.x / _k.w, _k.y / _k.w, _k.z / _k.w, _k.w / _k.w);
+
+        glm::vec4 inProjSpace = glm::vec4(_inProjSpace.x / _inProjSpace.w, _inProjSpace.y / _inProjSpace.w, _inProjSpace.z / _inProjSpace.w, _inProjSpace.w / _inProjSpace.w);
+//        inProjSpace.p /= inProjSpace.s;
+//        inProjSpace.q /= inProjSpace.s;
+//        inProjSpace.r /= inProjSpace.s;
+        
+//        std::cout << "projected origin is " << inProjSpace.x << ", " << inProjSpace.y << ", " << inProjSpace.z << ", " << inProjSpace.w << std::endl;
+//        std::cout << "other way around is " << k.x << ", " << k.y << ", " << k.z << ", " << k.w << std::endl;
+
         // draw the texturized rink
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, rinkTexture);
@@ -429,9 +410,20 @@ namespace IceHockey {
         glDrawArrays(GL_TRIANGLES, 0, numPlaneVertices);
         
         // draw the slider
+        model = glm::translate(model, SliderPosition);
+        shader.setMat4("model", model);
+
         glBindVertexArray(sliderVAO);
-//        shader.setVec3("aColor", Colors::Orange);
         shader.setVec3("aColor", currentColor);
+        glDrawArrays(GL_TRIANGLES, 0, numCubeVertices);
+        
+        // slider handle
+        glBindVertexArray(sliderHandleVAO);
+        glm::mat4 handleModel = glm::translate(model, handleTranslate);
+
+//        std::cout << "handleTranslate is " << handleTranslate.x << ", " << handleTranslate.y << ", " << handleTranslate.z << std::endl;
+        shader.setMat4("model", handleModel);
+        shader.setVec3("aColor", objectColors[SliderHandle]);
         glDrawArrays(GL_TRIANGLES, 0, numCubeVertices);
         
         // set the text projection
@@ -636,7 +628,11 @@ namespace IceHockey {
         
         lastX = xpos;
         lastY = ypos;
-//        std::cout << lastX << ", " << lastY << std::endl;
+        
+        if (isDragging) {
+            float dx = lastX - dragX;
+            handleTranslate.x = std::min(std::max(lastTranslate.x + dx / DragSensitivity, -SLIDER_LENGTH / 2), SLIDER_LENGTH / 2);
+        }
 
         camera.ProcessMouseMovement(xoffset, yoffset);
     }

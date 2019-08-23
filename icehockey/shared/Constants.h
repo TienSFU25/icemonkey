@@ -14,6 +14,7 @@
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+const float SLIDER_LENGTH = 1.0;
 
 // X game seconds = 1 sim second
 const float Sim_Speed = 1.0;
@@ -22,10 +23,15 @@ const float Sim_Speed = 1.0;
 const float Rink_Width_Max = 100;
 const float Rink_Height_Max = 42.5;
 
+const float DragSensitivity = 100.0;
+
+const glm::vec3 SliderPosition = glm::vec3(0.5, 0.5, 0.3);
+
 enum SelectedObject {
     Circle,
     Rink,
     Slider,
+    SliderHandle,
     None
 };
 

@@ -59,4 +59,6 @@ namespace Utils {
     std::vector<float> genCubeVertices(float bottomX, float bottomY, float bottomZ, float w, float h, float d, float objectId);
     
     std::vector<float> addColors(std::vector<float> src, glm::vec3 color, int step = 6);
+    
+    glm::vec4 screenToWorldSpace(glm::vec2 point, glm::mat4 model, glm::mat4 view, glm::mat4 projection);
 }
