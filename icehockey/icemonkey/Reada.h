@@ -56,7 +56,7 @@ public:
     void readTheDatFile() {
         string wholeThing;
         string line;
-        ifstream myfile ("/Users/user/Documents/361/opengl/icehockey/icehockey/scripts/_timeline.json");
+        ifstream myfile ("/Users/user/Documents/361/opengl/icehockey/icehockey/scripts/puck.json");
         ifstream myfile2 ("/Users/user/Documents/361/opengl/icehockey/icehockey/scripts/players.dat");
         
         set<int> playersInFirstTeam;

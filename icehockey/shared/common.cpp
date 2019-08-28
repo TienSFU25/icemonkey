@@ -236,6 +236,23 @@ namespace Utils {
         return cubeVertices;
     }
     
+    std::vector<float> genQuadVertices(glm::vec2 bottomLeft, float w, float h, glm::vec2 tBottomLeft, float tw, float th, float objectId) {
+        
+        float tblx = tBottomLeft.x;
+        float tbly = tBottomLeft.y;
+        
+        std::vector<float> quadVertices = {
+            bottomLeft.x, bottomLeft.y, 0, tblx, tbly, objectId,
+            bottomLeft.x + w, bottomLeft.y, 0, tblx + tw, tbly, objectId,
+            bottomLeft.x + w, bottomLeft.y + h, 0, tblx + tw, tbly + th, objectId,
+            bottomLeft.x, bottomLeft.y, 0, tblx, tbly, objectId,
+            bottomLeft.x + w, bottomLeft.y + h, 0, tblx + tw, tbly + th, objectId,
+            bottomLeft.x, bottomLeft.y + h, 0, tblx, tbly + th, objectId
+        };
+        
+        return quadVertices;
+    }
+    
     std::vector<float> addColors(std::vector<float> src, glm::vec3 color, int step) {
         std::vector<float> withColors;
         

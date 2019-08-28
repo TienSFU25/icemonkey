@@ -57,6 +57,7 @@ namespace Utils {
     float ndcToTexCoord(float f);
     
     std::vector<float> genCubeVertices(float bottomX, float bottomY, float bottomZ, float w, float h, float d, float objectId);
+    std::vector<float> genQuadVertices(glm::vec2 bottomLeft, float w, float h, glm::vec2 tBottomLeft, float tw, float th, float objectId);
     
     std::vector<float> addColors(std::vector<float> src, glm::vec3 color, int step = 6);
     

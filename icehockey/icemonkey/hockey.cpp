@@ -40,18 +40,23 @@ namespace IceHockey {
     float SLIDER_ID = 3.0;
     float SLIDER_HANDLE_ID = 4.0;
     
+    Arrow arrow;
+    glm::vec2 end;
+    float dArrow = glm::radians(-90.0);
+    float multiplier = 0.0;
+    
     // timing
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
     
     // font shit
-    GLuint planeVBO, planeVAO, circleVBO, circleVAO, TextVBO, TextVAO, sliderVBO, sliderVAO, sliderHandleVAO, sliderHandleVBO;
-    int numPlaneVertices, numCircleVertices;
+    GLuint planeVBO, planeVAO, circleVBO, circleVAO, TextVBO, TextVAO, sliderVBO, sliderVAO, sliderHandleVAO, sliderHandleVBO, lineVBO, lineVAO;
+    int numPlaneVertices, numCircleVertices, numArrowVertices;
     int numCubeVertices = 24;
     std::map<GLchar, Character> Characters;
     
     // textures
-    unsigned int rinkTexture, homeTexture, awayTexture;
+    unsigned int rinkTexture, homeTexture, awayTexture, arrowTexture;
     
     std::vector<float> initCircleVertices() {
         int circle_points = 50;
@@ -144,6 +149,9 @@ namespace IceHockey {
         
         awayTexture = Utils::loadTexture("/Users/user/Documents/361/opengl/icehockey/icehockey/icemonkey/tiena.jpg");
         
+        arrowTexture =
+            Utils::loadTexture("/Users/user/Documents/361/opengl/icehockey/icehockey/icemonkey/arrow.png");
+        
         // build and compile our shader zprogram
         // ------------------------------------
         std::string loc =  "/Users/user/Documents/361/opengl/icehockey/icehockey/shaders/";
@@ -226,6 +234,21 @@ namespace IceHockey {
         glGenVertexArrays(1, &sliderHandleVAO);
         glBindVertexArray(sliderHandleVAO);
         IceHockey::setupBoringVAO();
+        
+        // mr arrow
+        std::vector<float> lineVertices = arrow.getVertices();
+        end = arrow.getHeadEnd();
+
+        numArrowVertices = (int) lineVertices.size() / numAttribPerVertex;
+        
+        glGenBuffers(1, &lineVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+        glBufferData(GL_ARRAY_BUFFER, lineVertices.size() * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+        
+        glGenVertexArrays(1, &lineVAO);
+        glBindVertexArray(lineVAO);
+        IceHockey::setupBoringVAO();
+//        glBindBuffer(GL_ARRAY_BUFFER, 0);
         
         glfwSetKeyCallback(window, IceHockey::key_callback);
         
@@ -407,7 +430,35 @@ namespace IceHockey {
         glBindTexture(GL_TEXTURE_2D, rinkTexture);
         
         glBindVertexArray(planeVAO);
-        glDrawArrays(GL_TRIANGLES, 0, numPlaneVertices);
+//        glDrawArrays(GL_TRIANGLES, 0, numPlaneVertices);
+        
+        // mr arrow
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, arrowTexture);
+        
+//        glm::vec2 start = arrow.getTailStart();
+//        glm::vec2 newStart = glm::vec2(start.x - 0.000, start.y + 0.001);
+//
+//        arrow.setTailStart(newStart);
+        dArrow += 0.0005;
+        multiplier += 0.0001;
+        
+//        glm::vec2 newEnd = glm::vec2(end.x + cos(dArrow), end.y + sin(dArrow));
+        glm::vec2 newEnd = (0.5f + multiplier) * glm::vec2(cos(dArrow), sin(dArrow));
+
+        arrow.setHeadEnd(newEnd);
+        
+        std::vector<float> lineVertices = arrow.getVertices();
+        glBindVertexArray(lineVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * lineVertices.size(), lineVertices.data());
+        
+        glm::mat4 rotation = arrow.getRotationMatrix();
+        glm::mat4 arrowModel = glm::translate(model, glm::vec3(0, 0, 1)) * rotation;
+        shader.setMat4("model", arrowModel);
+//        shader.setMat4("model", rotation);
+        
+        glDrawArrays(GL_TRIANGLES, 0, numArrowVertices);
         
         // draw the slider
         model = glm::translate(model, SliderPosition);
@@ -415,7 +466,7 @@ namespace IceHockey {
 
         glBindVertexArray(sliderVAO);
         shader.setVec3("aColor", currentColor);
-        glDrawArrays(GL_TRIANGLES, 0, numCubeVertices);
+//        glDrawArrays(GL_TRIANGLES, 0, numCubeVertices);
         
         // slider handle
         glBindVertexArray(sliderHandleVAO);
@@ -424,7 +475,7 @@ namespace IceHockey {
 //        std::cout << "handleTranslate is " << handleTranslate.x << ", " << handleTranslate.y << ", " << handleTranslate.z << std::endl;
         shader.setMat4("model", handleModel);
         shader.setVec3("aColor", objectColors[SliderHandle]);
-        glDrawArrays(GL_TRIANGLES, 0, numCubeVertices);
+//        glDrawArrays(GL_TRIANGLES, 0, numCubeVertices);
         
         // set the text projection
         GLfloat W = static_cast<GLfloat>(SCR_WIDTH);
@@ -476,7 +527,7 @@ namespace IceHockey {
             }
             
             shader.setMat4("model", circleModel);
-            glDrawArrays(GL_TRIANGLE_FAN, 0, numCircleVertices);
+//            glDrawArrays(GL_TRIANGLE_FAN, 0, numCircleVertices);
             
             textShader.use();
             glm::mat4 textModel;
@@ -487,7 +538,7 @@ namespace IceHockey {
             textShader.setMat4("view", view);
             textShader.setMat4("projection", projection);
             
-            IceHockey::RenderText(textShader, std::to_string(playerId), 0.0, 0.0, 0.75, glm::vec3(0.0, 0.0, 0.0));
+//            IceHockey::RenderText(textShader, std::to_string(playerId), 0.0, 0.0, 0.75, glm::vec3(0.0, 0.0, 0.0));
             it++;
         }
     }

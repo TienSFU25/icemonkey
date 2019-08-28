@@ -27,7 +27,7 @@ void main()
     }
     
     else {
-        //        FragColor = vec4(0.0, 0.0, 1.0, 1.0);
-        FragColor = texture(texture1, TexCoord);
+        FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+//        FragColor = texture(texture1, TexCoord);
     }
 }

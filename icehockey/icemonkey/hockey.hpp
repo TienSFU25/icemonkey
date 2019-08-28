@@ -13,6 +13,7 @@
 #include <GLFW/glfw3.h>
 #include "common.hpp"
 #include "shader_s.h"
+#include "arrow.hpp"
 
 #endif /* hockey_hpp */
 
