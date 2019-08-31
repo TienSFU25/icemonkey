@@ -63,15 +63,7 @@ namespace IceHockey {
         double dtheta = 2*  3.1416f/circle_points ;
         double theta = 0.0;
         std::vector<float> circleVertices = {};
-        
-        // add the first point
-//        circleVertices.push_back(CIRCLE_RADIUS * cos(0));
-//        circleVertices.push_back(CIRCLE_RADIUS * sin(0));
-//        circleVertices.push_back(0.1f);
-//        circleVertices.push_back(Utils::ndcToTexCoord(cos(0)));
-//        circleVertices.push_back(Utils::ndcToTexCoord(sin(0)));
-//        circleVertices.push_back(CIRC_ID);
-        
+
         for (int i = 0; i < circle_points; i++)
         {
             circleVertices.push_back(CIRCLE_RADIUS * cos(theta));
@@ -85,14 +77,6 @@ namespace IceHockey {
 
             theta += dtheta;
         }
-        
-        // add the first point again, to complete circle
-//        circleVertices.push_back(CIRCLE_RADIUS * cos(0));
-//        circleVertices.push_back(CIRCLE_RADIUS * sin(0));
-//        circleVertices.push_back(0.1f);
-//        circleVertices.push_back(Utils::ndcToTexCoord(cos(0)));
-//        circleVertices.push_back(Utils::ndcToTexCoord(sin(0)));
-//        circleVertices.push_back(CIRC_ID);
 
         return circleVertices;
     }
@@ -412,19 +396,6 @@ namespace IceHockey {
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
         
-        glm::vec4 randomPoint = glm::vec4(0.1, 0.1, 0.1, 1.0);
-        glm::vec4 _inProjSpace = randomPoint * model * view * projection;
-        glm::vec4 _k = projection * view * model * randomPoint;
-        glm::vec4 k = glm::vec4(_k.x / _k.w, _k.y / _k.w, _k.z / _k.w, _k.w / _k.w);
-
-        glm::vec4 inProjSpace = glm::vec4(_inProjSpace.x / _inProjSpace.w, _inProjSpace.y / _inProjSpace.w, _inProjSpace.z / _inProjSpace.w, _inProjSpace.w / _inProjSpace.w);
-//        inProjSpace.p /= inProjSpace.s;
-//        inProjSpace.q /= inProjSpace.s;
-//        inProjSpace.r /= inProjSpace.s;
-        
-//        std::cout << "projected origin is " << inProjSpace.x << ", " << inProjSpace.y << ", " << inProjSpace.z << ", " << inProjSpace.w << std::endl;
-//        std::cout << "other way around is " << k.x << ", " << k.y << ", " << k.z << ", " << k.w << std::endl;
-
         // draw the texturized rink
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, rinkTexture);
