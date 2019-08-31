@@ -43,16 +43,6 @@ public:
     float timeLeft = 0.0f;
     int counter = -1;
     
-    void move(float deltaTime) {
-        vector<int> playersLeavingThisStep;
-        vector<int> allPlayers;
-        for (map<int,Playa>::iterator it=players.begin(); it!=players.end(); ++it) {
-            int pid = it -> first;
-            Playa& player = it -> second;
-            player.move(deltaTime);
-        }
-    }
-    
     void readTheDatFile() {
         string wholeThing;
         string line;

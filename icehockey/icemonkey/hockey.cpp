@@ -317,13 +317,20 @@ namespace IceHockey {
             float currentFrame = glfwGetTime();
             deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
+
             if (!loop) {
                 // input
                 // -----
                 IceHockey::processInput(window);
                 
-                rd.move(deltaTime);
+                std::map<int, Playa>::iterator it = rd.players.begin();
 
+                while(it != rd.players.end()) {
+                    Playa& playa = it -> second;
+                    playa.move(deltaTime);
+                    it++;
+                }
+                
                 // render
                 // first render to (invisible) "color instancing" framebuffer
                 glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
@@ -469,7 +476,6 @@ namespace IceHockey {
             shader.use();
             glBindVertexArray(circleVAO);
             
-            int playerId = it -> first;
             Playa playa = it -> second;
             
             glm::mat4 circleModel = glm::mat4(1.0f);
@@ -498,7 +504,7 @@ namespace IceHockey {
             }
             
             shader.setMat4("model", circleModel);
-//            glDrawArrays(GL_TRIANGLE_FAN, 0, numCircleVertices);
+            glDrawArrays(GL_TRIANGLE_FAN, 0, numCircleVertices);
             
             textShader.use();
             glm::mat4 textModel;
