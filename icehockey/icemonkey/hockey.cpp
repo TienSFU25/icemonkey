@@ -40,8 +40,40 @@ namespace IceHockey {
     float SLIDER_ID = 3.0;
     float SLIDER_HANDLE_ID = 4.0;
     
-    Arrow arrow;
-    glm::vec2 end;
+    ArrowState s0 = {
+        .Start = glm::vec2(0.0, 0.0),
+        .End = glm::vec2(0.0, 0.0),
+        .Time = 0
+    };
+    
+    ArrowState s01 = {
+        .Start = glm::vec2(0.0, 0.0),
+        .End = glm::vec2(0.0, 0.0),
+        .Time = 4
+    };
+    
+    ArrowState s1 = {
+        .Start = glm::vec2(1.0, 0.0),
+        .End = glm::vec2(0.2, -0.5),
+        .Time = 5
+    };
+    
+    ArrowState s2 = {
+        .Start = glm::vec2(0.0, 1.0),
+        .End = glm::vec2(0.2, -0.5),
+        .Time = 10
+    };
+    
+    ArrowState s3 = {
+        .Start = glm::vec2(0.0, 2.0),
+        .End = glm::vec2(0.2, -0.5),
+        .Time = 15
+    };
+    
+    std::vector<ArrowState> states {s0, s01, s1, s2, s3};
+    
+    Arrow arrow(states);
+    
     float dArrow = glm::radians(-90.0);
     float multiplier = 0.0;
     
@@ -221,8 +253,7 @@ namespace IceHockey {
         
         // mr arrow
         std::vector<float> lineVertices = arrow.getVertices();
-        end = arrow.getHeadEnd();
-
+        
         numArrowVertices = (int) lineVertices.size() / numAttribPerVertex;
         
         glGenBuffers(1, &lineVBO);
@@ -232,7 +263,7 @@ namespace IceHockey {
         glGenVertexArrays(1, &lineVAO);
         glBindVertexArray(lineVAO);
         IceHockey::setupBoringVAO();
-//        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
         
         glfwSetKeyCallback(window, IceHockey::key_callback);
         
@@ -331,6 +362,8 @@ namespace IceHockey {
                     it++;
                 }
                 
+                arrow.move(deltaTime);
+                
                 // render
                 // first render to (invisible) "color instancing" framebuffer
                 glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
@@ -422,9 +455,8 @@ namespace IceHockey {
         multiplier += 0.0001;
         
 //        glm::vec2 newEnd = glm::vec2(end.x + cos(dArrow), end.y + sin(dArrow));
-        glm::vec2 newEnd = (0.5f + multiplier) * glm::vec2(cos(dArrow), sin(dArrow));
-
-        arrow.setHeadEnd(newEnd);
+//        glm::vec2 newEnd = (0.5f + multiplier) * glm::vec2(cos(dArrow), sin(dArrow));
+//        arrow.setHeadEnd(newEnd);
         
         std::vector<float> lineVertices = arrow.getVertices();
         glBindVertexArray(lineVAO);
@@ -450,7 +482,6 @@ namespace IceHockey {
         glBindVertexArray(sliderHandleVAO);
         glm::mat4 handleModel = glm::translate(model, handleTranslate);
 
-//        std::cout << "handleTranslate is " << handleTranslate.x << ", " << handleTranslate.y << ", " << handleTranslate.z << std::endl;
         shader.setMat4("model", handleModel);
         shader.setVec3("aColor", objectColors[SliderHandle]);
 //        glDrawArrays(GL_TRIANGLES, 0, numCubeVertices);

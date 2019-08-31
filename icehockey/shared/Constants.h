@@ -48,4 +48,16 @@ namespace Colors {
     const glm::vec3 Pink = glm::vec3(255.0 / 255.0, 192 / 255.0, 203 / 255.0);
 }
 
+struct ArrowState {
+    glm::vec2 Start;
+    glm::vec2 End;
+    float Time;
+};
+
+const ArrowState DefaultArrow = {
+    .Start = glm::vec2(0.0, 0.0),
+    .End = glm::vec2(0.0, -0.1),
+    .Time = 0
+};
+
 #endif /* Constants_h */
