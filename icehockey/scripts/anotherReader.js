@@ -1,8 +1,7 @@
 let giantFile = require('./giantFile');
 const fs = require('fs');
 const LIM = 10;
-const EnterMargin = 5;
-const LeaveMargin = 5;
+const Cant_See_Margin = 0.1;
 const Rink_Width_Max = 100;
 const Rink_Height_Max = 42.5;
 const Rink_Max_Dim = Math.max(Rink_Width_Max, Rink_Height_Max);
@@ -53,24 +52,31 @@ addOrAppend(playerTimeLine, puckId, {
     X: 0,
     Y: 0,
     T: 0,
-    S: 'E'
+    S: 'E',
+    A: 'none'
 });
+
+let lastX = 0;
+let lastY = 0;
 
 for (let i = 0; i < giantFile.events.length; i++) {
     const theEvent = giantFile.events[i];
     const gameTime = roundy(theEvent.gameTime);
-    const playerTeam = theEvent.playersOnIce['18'].indexOf(theEvent.playerId) > 0 ? 0 : 1;
     const X = roundy(normalize(parseFloat(theEvent.xCoord)), 10);
     const Y = roundy(normalize(parseFloat(theEvent.yCoord)), 10);
 
-    // enter before move, so the second pass is correct
-    // guys who entered
-    addOrAppend(playerTimeLine, puckId, {
-        X,
-        Y,
-        T: gameTime,
-        S: 'M'
-    });
+    if (Math.sqrt(Math.pow(X - lastX, 2) + Math.pow(Y - lastY, 2)) > Cant_See_Margin) {
+        addOrAppend(playerTimeLine, puckId, {
+            X,
+            Y,
+            T: gameTime,
+            S: 'M',
+            A: theEvent.name ? theEvent.name : 'none'
+        });
+    }
+
+    lastX = X;
+    lastY = Y;
 }
 
 let pids = Object.keys(playerTimeLine);
